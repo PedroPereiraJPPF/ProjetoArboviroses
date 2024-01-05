@@ -20,7 +20,7 @@ import com.opencsv.CSVReader;
 @Service
 public class NotificationService {
     @Autowired
-    private NotificationRepository repository;
+    private NotificationRepository notificationRepository;
 
     public String saveCSVDataInDatabase(MultipartFile file) throws Exception
     {
@@ -34,7 +34,7 @@ public class NotificationService {
                 notifications.add(NotificationDataManager.csvLineToNotification(csvLine, header));
             }
 
-            repository.saveAll(notifications);
+            notificationRepository.saveAll(notifications);
 
             return "csv data saved successfully";
         } catch (Exception e) {
@@ -44,7 +44,7 @@ public class NotificationService {
 
     public Page<DataNotificationResponseDTO> getAllNotificationsPaginated(Pageable pageable)
     {
-        Page<Notification> notifications = repository.findAll(pageable);
+        Page<Notification> notifications = notificationRepository.findAll(pageable);
         return notifications.map(DataNotificationResponseDTO::new);
     }
 }
