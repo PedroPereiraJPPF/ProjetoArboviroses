@@ -1,11 +1,6 @@
 package com.arboviroses.conectaDengue.Entities.Notification;
 
-import java.text.ParseException;
-import java.util.List;
-
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
@@ -21,12 +16,12 @@ import lombok.Setter;
 @Table(name = "notifications")
 public class Notification {
     @Id
-    private long id_notification;
-    private String id_agravo;
-    private String data_notification;
-    private String data_nascimento;
+    private long idNotification;
+    private String idAgravo;
+    private String dataNotification;
+    private String dataNascimento;
     private String classificacao;
     private String sexo;
-    private String nome_bairro;
-    private String evolucao;
+    private String nomeBairro;
+    private String evolucao;  
 }

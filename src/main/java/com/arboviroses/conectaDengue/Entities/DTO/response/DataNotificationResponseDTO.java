@@ -12,12 +12,24 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 public class DataNotificationResponseDTO {
-    private long id_notification;
-    private String id_agravo;
-    private String data_notification;
-    private String data_nascimento;
+    private long idNotification;
+    private String idAgravo;
+    private String dataNotification;
+    private String dataNascimento;
     private String classificacao;
     private String sexo;
-    private String nome_bairro;
+    private String nomeBairro;
     private String evolucao;  
+
+    public DataNotificationResponseDTO(Notification notification)
+    {
+        this.idNotification = notification.getIdNotification();
+        this.idAgravo = notification.getIdAgravo();
+        this.dataNotification = notification.getDataNotification();
+        this.dataNascimento = notification.getDataNascimento();
+        this.classificacao = notification.getClassificacao();
+        this.sexo = notification.getSexo();
+        this.nomeBairro = notification.getNomeBairro();
+        this.evolucao = notification.getEvolucao();
+    }
 }

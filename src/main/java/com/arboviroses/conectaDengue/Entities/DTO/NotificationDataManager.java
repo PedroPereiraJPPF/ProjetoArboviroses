@@ -25,13 +25,13 @@ public class NotificationDataManager {
     public static DataNotificationResponseDTO NotificationToResponseDTO(Notification notification)
     {   
         return new DataNotificationResponseDTO(
-            notification.getId_notification(),
-            notification.getId_agravo(),
-            notification.getData_notification(),
-            notification.getData_nascimento(),
+            notification.getIdNotification(),
+            notification.getIdAgravo(),
+            notification.getDataNotification(),
+            notification.getDataNascimento(),
             notification.getClassificacao(),
             notification.getSexo(),
-            notification.getNome_bairro(),
+            notification.getNomeBairro(),
             notification.getEvolucao()
         );
     }
