@@ -54,27 +54,27 @@ public class NotificationService {
 
     public Page<DataNotificationResponseDTO> getNotificationsByIdAgravoPaginated(Pageable pageable, HttpServletRequest request) throws InvalidAgravoException
     {
-        if (request.getParameter("filter") == null) {
+        if (request.getParameter("agravo") == null) {
             return getAllNotificationsPaginated(pageable);
         }
         
-        String filter = request.getParameter("filter").toUpperCase();
+        String agravo = request.getParameter("agravo").toUpperCase();
         
-        switch(filter) {
+        switch(agravo) {
             case "ZIKA":
-                filter = "A92.0";
+                agravo = "A92.0";
                 break;
             case "DENGUE":
-                filter = "A90";
+                agravo = "A90";
                 break;
             case "CHIKUNGUNYA":
-                filter = "A928";
+                agravo = "A928";
                 break;
             default: 
-                throw new InvalidAgravoException("Valor inválido: " + filter + ". valores aceitos: zika, dengue, chikungunya");
+                throw new InvalidAgravoException("Valor inválido: " + agravo + ". valores aceitos: zika, dengue, chikungunya");
         }
 
-        Page<Notification> notifications = notificationRepository.findByIdAgravo(pageable, filter);
+        Page<Notification> notifications = notificationRepository.findByIdAgravo(pageable, agravo);
         return notifications.map(DataNotificationResponseDTO::new);
     }
 }
