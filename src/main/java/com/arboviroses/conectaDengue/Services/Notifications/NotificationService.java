@@ -8,13 +8,15 @@ import java.util.Arrays;
 import java.util.List;
 
 import com.arboviroses.conectaDengue.Repositories.Notifications.NotificationRepository;
+import com.arboviroses.conectaDengue.Utils.ConvertNameToIdAgravo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-
 import com.arboviroses.conectaDengue.Entities.DTO.NotificationDataManager;
+import com.arboviroses.conectaDengue.Entities.DTO.response.DataNotificationInfoDTO;
+import com.arboviroses.conectaDengue.Entities.DTO.response.DataNotificationInfoNoFilterDTO;
 import com.arboviroses.conectaDengue.Entities.DTO.response.DataNotificationResponseDTO;
 import com.arboviroses.conectaDengue.Entities.DTO.response.SaveCsvResponseDTO;
 import com.arboviroses.conectaDengue.Entities.Notification.Notification;
@@ -65,23 +67,40 @@ public class NotificationService {
             return getAllNotificationsPaginated(pageable);
         }
         
-        String agravo = request.getParameter("agravo").toUpperCase();
-        
-        switch(agravo) {
-            case "ZIKA":
-                agravo = "A92.0";
-                break;
-            case "DENGUE":
-                agravo = "A90";
-                break;
-            case "CHIKUNGUNYA":
-                agravo = "A928";
-                break;
-            default: 
-                throw new InvalidAgravoException("Valor inválido: " + agravo + ". valores aceitos: zika, dengue, chikungunya");
-        }
+        String agravo = ConvertNameToIdAgravo.convert(request.getParameter("agravo"));
 
         Page<Notification> notifications = notificationRepository.findByIdAgravo(pageable, agravo);
         return notifications.map(DataNotificationResponseDTO::new);
+    }
+
+    public DataNotificationInfoDTO getNotificationsInfoForGraphics()
+    {
+        return new DataNotificationInfoNoFilterDTO(
+            notificationRepository.count(),
+            notificationRepository.countBySexo("M"),
+            notificationRepository.countBySexo("F"),
+            notificationRepository.countByEvolucao("1"),
+            notificationRepository.countByEvolucao("2"),
+            notificationRepository.countByIdAgravo("A90"),
+            notificationRepository.countByIdAgravo("A92.0"),
+            notificationRepository.countByIdAgravo("A928")
+        );
+    }
+
+    public DataNotificationInfoDTO getNotificationsInfoForGraphicsByIdAgravo(HttpServletRequest request) throws InvalidAgravoException
+    {
+        if (request.getParameter("agravo") == null) {
+            return getNotificationsInfoForGraphics();
+        }
+        
+        String agravo = ConvertNameToIdAgravo.convert(request.getParameter("agravo"));
+
+        return new DataNotificationInfoDTO(
+            notificationRepository.countByIdAgravo(agravo),
+            notificationRepository.countByIdAgravoAndSexo(agravo, "M"),
+            notificationRepository.countByIdAgravoAndSexo(agravo, "F"),
+            notificationRepository.countByIdAgravoAndEvolucao(agravo, "0"),
+            notificationRepository.countByIdAgravoAndEvolucao(agravo, "1")
+        );
     }
 }

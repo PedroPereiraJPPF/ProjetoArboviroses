@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.arboviroses.conectaDengue.Entities.DTO.response.DataNotificationInfoDTO;
 import com.arboviroses.conectaDengue.Entities.DTO.response.DataNotificationResponseDTO;
 import com.arboviroses.conectaDengue.Entities.DTO.response.SaveCsvResponseDTO;
 import com.arboviroses.conectaDengue.Exceptions.InvalidAgravoException;
@@ -31,5 +32,10 @@ public class NotificationController
     @GetMapping("/notifications")
     public ResponseEntity<Page<DataNotificationResponseDTO>> getAll(Pageable pageable, HttpServletRequest request) throws InvalidAgravoException {
         return ResponseEntity.ok().body(notificationService.getNotificationsByIdAgravoPaginated(pageable, request));
+    }
+
+    @GetMapping("/notifications/getinfo")
+    public ResponseEntity<DataNotificationInfoDTO> getNotificationsBySexo(HttpServletRequest request) throws InvalidAgravoException {
+        return ResponseEntity.ok().body(notificationService.getNotificationsInfoForGraphicsByIdAgravo(request));
     }
 }
