@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.arboviroses.conectaDengue.Entities.DTO.response.DataNotificationResponseDTO;
+import com.arboviroses.conectaDengue.Entities.DTO.response.SaveCsvResponseDTO;
 import com.arboviroses.conectaDengue.Exceptions.InvalidAgravoException;
 import com.arboviroses.conectaDengue.Services.Notifications.NotificationService;
 
@@ -23,7 +24,7 @@ public class NotificationController
     NotificationService notificationService;
 
     @PostMapping("/savecsvdata")
-    public ResponseEntity<String> readCsv(@RequestParam("csv_file") MultipartFile file) throws Exception {
+    public ResponseEntity<SaveCsvResponseDTO> readCsv(@RequestParam("csv_file") MultipartFile file) throws Exception {
         return ResponseEntity.ok().body(notificationService.saveCSVDataInDatabase(file));
     }
 

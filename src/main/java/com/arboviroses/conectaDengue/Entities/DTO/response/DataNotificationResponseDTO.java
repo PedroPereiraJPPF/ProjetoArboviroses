@@ -1,7 +1,7 @@
 package com.arboviroses.conectaDengue.Entities.DTO.response;
 
+import java.util.Date;
 import com.arboviroses.conectaDengue.Entities.Notification.Notification;
-
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -14,8 +14,8 @@ import lombok.Setter;
 public class DataNotificationResponseDTO {
     private long idNotification;
     private String idAgravo;
-    private String dataNotification;
-    private String dataNascimento;
+    private Date dataNotification;
+    private Date dataNascimento;
     private String classificacao;
     private String sexo;
     private String nomeBairro;

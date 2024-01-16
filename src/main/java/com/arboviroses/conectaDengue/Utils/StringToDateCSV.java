@@ -1,0 +1,37 @@
+package com.arboviroses.conectaDengue.Utils;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
+import com.arboviroses.conectaDengue.Exceptions.InvalidDateStringException;
+
+public class StringToDateCSV
+{
+    public static Date ConvertStringToDate(String dateString) throws InvalidDateStringException, ParseException 
+    {
+        SimpleDateFormat defaultDateFormat = new SimpleDateFormat("dd/MM/yyyy");
+        String[] dateInfos = dateString.split("/");
+        
+        if (dateInfos.length < 3) {
+            throw new InvalidDateStringException("Invalid date format: " + dateString);
+        }   
+
+        String mes = formatFieldsOfDate(dateInfos[0], "0", 2);
+        String dia = formatFieldsOfDate(dateInfos[1], "0", 2);
+        String formatedDateComplete = dia + "/" + mes + "/" + dateInfos[2];
+
+        Date finalDate = defaultDateFormat.parse(formatedDateComplete);
+
+        return finalDate;
+    }
+
+    private static String formatFieldsOfDate(String field, String stringToAdd, int lenght)
+    {   
+        while (field.length() < lenght) {
+            field = stringToAdd + field;
+        }
+
+        return field;
+    }
+}

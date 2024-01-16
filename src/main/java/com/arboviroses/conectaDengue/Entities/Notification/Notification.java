@@ -1,5 +1,7 @@
 package com.arboviroses.conectaDengue.Entities.Notification;
 
+import java.util.Date;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
@@ -18,8 +20,8 @@ public class Notification {
     @Id
     private long idNotification;
     private String idAgravo;
-    private String dataNotification;
-    private String dataNascimento;
+    private Date dataNotification;
+    private Date dataNascimento;
     private String classificacao;
     private String sexo;
     private String nomeBairro;

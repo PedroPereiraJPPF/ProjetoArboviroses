@@ -16,8 +16,10 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.arboviroses.conectaDengue.Entities.DTO.NotificationDataManager;
 import com.arboviroses.conectaDengue.Entities.DTO.response.DataNotificationResponseDTO;
+import com.arboviroses.conectaDengue.Entities.DTO.response.SaveCsvResponseDTO;
 import com.arboviroses.conectaDengue.Entities.Notification.Notification;
 import com.arboviroses.conectaDengue.Exceptions.InvalidAgravoException;
+import com.arboviroses.conectaDengue.Exceptions.InvalidDateStringException;
 import com.opencsv.CSVReader;
 import com.opencsv.exceptions.CsvException;
 
@@ -28,7 +30,7 @@ public class NotificationService {
     @Autowired
     private NotificationRepository notificationRepository;
 
-    public String saveCSVDataInDatabase(MultipartFile file) throws IOException, CsvException, NumberFormatException, ParseException
+    public SaveCsvResponseDTO saveCSVDataInDatabase(MultipartFile file) throws IOException, CsvException, NumberFormatException, ParseException, InvalidDateStringException
     {
         try (CSVReader csvReader = new CSVReader(new InputStreamReader(file.getInputStream()))) {
             List<String[]> csvLines = csvReader.readAll();
@@ -37,12 +39,17 @@ public class NotificationService {
             csvLines.remove(0);
 
             for(String[] csvLine : csvLines) {
-                notifications.add(NotificationDataManager.csvLineToNotification(csvLine, header));
+                try {
+                    notifications.add(NotificationDataManager.csvLineToNotification(csvLine, header));
+                } catch (Exception e) {
+                    // no futuro pode ser adicionada uma tabela para salvar esses dados
+                    System.out.println(e.getMessage());
+                }
             }
 
             notificationRepository.saveAll(notifications);
 
-            return "csv data saved successfully";
+            return new SaveCsvResponseDTO("sucesso", "dados do csv salvos com sucesso");
         }
     } 
 
