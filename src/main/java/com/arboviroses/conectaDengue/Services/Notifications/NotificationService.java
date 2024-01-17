@@ -81,6 +81,7 @@ public class NotificationService {
             notificationRepository.countBySexo("F"),
             notificationRepository.countByEvolucao("1"),
             notificationRepository.countByEvolucao("2"),
+            notificationRepository.listarBairrosMaisAfetados(),
             notificationRepository.countByIdAgravo("A90"),
             notificationRepository.countByIdAgravo("A92.0"),
             notificationRepository.countByIdAgravo("A928")
@@ -100,7 +101,8 @@ public class NotificationService {
             notificationRepository.countByIdAgravoAndSexo(agravo, "M"),
             notificationRepository.countByIdAgravoAndSexo(agravo, "F"),
             notificationRepository.countByIdAgravoAndEvolucao(agravo, "0"),
-            notificationRepository.countByIdAgravoAndEvolucao(agravo, "1")
+            notificationRepository.countByIdAgravoAndEvolucao(agravo, "1"),
+            notificationRepository.listarBairrosMaisAfetadosByIdAgravo(agravo)
         );
     }
 }

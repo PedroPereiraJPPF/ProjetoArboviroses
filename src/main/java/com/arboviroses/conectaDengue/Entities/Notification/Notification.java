@@ -15,7 +15,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "notifications")
-@Entity(name = "notifications")
+@Entity(name = "Notification")
 public class Notification {
     @Id
     private long idNotification;
