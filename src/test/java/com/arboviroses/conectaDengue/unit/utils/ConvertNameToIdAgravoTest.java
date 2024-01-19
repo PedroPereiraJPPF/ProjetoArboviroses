@@ -1,4 +1,4 @@
-package com.arboviroses.conectaDengue.utils;
+package com.arboviroses.conectaDengue.unit.utils;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
