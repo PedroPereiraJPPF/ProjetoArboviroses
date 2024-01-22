@@ -1,7 +1,6 @@
 package com.arboviroses.conectaDengue.unit.Services;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -13,6 +12,7 @@ import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -28,6 +28,9 @@ import com.opencsv.exceptions.CsvException;
 
 @ExtendWith(MockitoExtension.class)
 public class NotificationServiceTest {
+    @Captor
+    ArgumentCaptor<List<Notification>> notificationListCaptor;
+
     @Mock
     private NotificationRepository notificationRepository;
 
@@ -48,15 +51,14 @@ public class NotificationServiceTest {
     }
 
     @Test
-    public void test_if_save_csv_in_database_is_using_the_method_saveAll() throws NumberFormatException, IOException, CsvException, ParseException, InvalidDateStringException
+    public void test_if_save_csv_in_database_is_using_the_method_saveAll_one_time() throws NumberFormatException, IOException, CsvException, ParseException, InvalidDateStringException
     {
         String csvContent = "NU_NOTIFIC,ID_AGRAVO,DT_NOTIFIC,DT_NASC,CLASSI_FIN,CS_SEXO,NM_BAIRRO,EVOLUCAO\n1,A90,10/06/2022,10/06/2003,1,F,ABOLICAO,1";
         MockMultipartFile mockMultipartFile = new MockMultipartFile("file", "test.csv", "text/csv", csvContent.getBytes());
-        ArgumentCaptor<List<Notification>> notificationListCaptor = ArgumentCaptor.forClass(List.class);
         when(notificationRepository.saveAll(notificationListCaptor.capture())).thenAnswer(invocation -> invocation.getArgument(0));
 
-        SaveCsvResponseDTO responseDTO = notificationService.saveCSVDataInDatabase(mockMultipartFile);
+        notificationService.saveCSVDataInDatabase(mockMultipartFile);
 
-        verify(notificationRepository, times(1)).saveAll(anyList());
+        verify(notificationRepository, times(1)).saveAll(notificationListCaptor.capture());
     }
 }

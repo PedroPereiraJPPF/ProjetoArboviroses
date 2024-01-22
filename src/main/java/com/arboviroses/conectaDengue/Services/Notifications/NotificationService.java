@@ -14,7 +14,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-import com.arboviroses.conectaDengue.Entities.DTO.NotificationDataManager;
 import com.arboviroses.conectaDengue.Entities.DTO.response.DataNotificationInfoDTO;
 import com.arboviroses.conectaDengue.Entities.DTO.response.DataNotificationInfoNoFilterDTO;
 import com.arboviroses.conectaDengue.Entities.DTO.response.DataNotificationResponseDTO;
@@ -24,6 +23,8 @@ import com.arboviroses.conectaDengue.Exceptions.InvalidAgravoException;
 import com.arboviroses.conectaDengue.Exceptions.InvalidDateStringException;
 import com.opencsv.CSVReader;
 import com.opencsv.exceptions.CsvException;
+
+import static com.arboviroses.conectaDengue.Utils.ConvertCSVLineToNotifications.convert;
 
 import jakarta.servlet.http.HttpServletRequest;
 
@@ -42,7 +43,7 @@ public class NotificationService {
 
             for(String[] csvLine : csvLines) {
                 try {
-                    notifications.add(NotificationDataManager.csvLineToNotification(csvLine, header));
+                    notifications.add(convert(csvLine, header));
                 } catch (Exception e) {
                     // no futuro pode ser adicionada uma tabela para salvar esses dados
                     System.out.println(e.getMessage());
