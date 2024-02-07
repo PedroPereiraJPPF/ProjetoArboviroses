@@ -18,11 +18,12 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.mock.web.MockMultipartFile;
 import java.util.List;
-import com.arboviroses.conectaDengue.Entities.DTO.response.SaveCsvResponseDTO;
-import com.arboviroses.conectaDengue.Entities.Notification.Notification;
-import com.arboviroses.conectaDengue.Exceptions.InvalidDateStringException;
-import com.arboviroses.conectaDengue.Repositories.Notifications.NotificationRepository;
-import com.arboviroses.conectaDengue.Services.Notifications.NotificationService;
+
+import com.arboviroses.conectaDengue.Api.DTO.response.SaveCsvResponseDTO;
+import com.arboviroses.conectaDengue.Api.Exceptions.InvalidDateStringException;
+import com.arboviroses.conectaDengue.Domain.Entities.Notification.Notification;
+import com.arboviroses.conectaDengue.Domain.Repositories.Notifications.NotificationRepository;
+import com.arboviroses.conectaDengue.Domain.Services.Notifications.NotificationService;
 import com.opencsv.exceptions.CsvException;
 
 

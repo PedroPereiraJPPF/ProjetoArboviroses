@@ -2,8 +2,9 @@ package com.arboviroses.conectaDengue.unit.utils;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
-import com.arboviroses.conectaDengue.Entities.Notification.Notification;
-import com.arboviroses.conectaDengue.Exceptions.InvalidDateStringException;
+
+import com.arboviroses.conectaDengue.Api.Exceptions.InvalidDateStringException;
+import com.arboviroses.conectaDengue.Domain.Entities.Notification.Notification;
 
 import java.util.List;
 import java.text.ParseException;

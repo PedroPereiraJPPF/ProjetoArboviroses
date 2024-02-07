@@ -1,6 +1,7 @@
-package com.arboviroses.conectaDengue.Exceptions;
+package com.arboviroses.conectaDengue.Api.Exceptions;
 
 import java.io.IOException;
+import java.sql.SQLIntegrityConstraintViolationException;
 import java.text.ParseException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -59,6 +60,13 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     public ResponseEntity<Object> HandleExceptions(InvalidDateStringException exception, WebRequest request)
     {
         ApiExceptionResponse exceptionResponse = new ApiExceptionResponse(HttpStatus.BAD_REQUEST, exception.getMessage());
+        return new ResponseEntity<>(exceptionResponse, new HttpHeaders(), exceptionResponse.getHttpStatus());
+    }
+
+    @ExceptionHandler(SQLIntegrityConstraintViolationException.class)
+    public ResponseEntity<Object> HandleExceptions(SQLIntegrityConstraintViolationException exception, WebRequest request)
+    {
+        ApiExceptionResponse exceptionResponse = new ApiExceptionResponse(HttpStatus.BAD_REQUEST, "Os dados desse csv já existem na base de dados");
         return new ResponseEntity<>(exceptionResponse, new HttpHeaders(), exceptionResponse.getHttpStatus());
     }
 }

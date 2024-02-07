@@ -1,4 +1,4 @@
-package com.arboviroses.conectaDengue.Exceptions;
+package com.arboviroses.conectaDengue.Api.Exceptions;
 
 public class InvalidDateStringException extends Exception{
     public InvalidDateStringException(String message) {

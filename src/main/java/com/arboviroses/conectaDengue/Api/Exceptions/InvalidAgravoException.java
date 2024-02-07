@@ -1,4 +1,4 @@
-package com.arboviroses.conectaDengue.Exceptions;
+package com.arboviroses.conectaDengue.Api.Exceptions;
 
 import lombok.Getter;
 

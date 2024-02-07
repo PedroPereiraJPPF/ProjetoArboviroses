@@ -1,4 +1,4 @@
-package com.arboviroses.conectaDengue.Entities.DTO.response;
+package com.arboviroses.conectaDengue.Api.DTO.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

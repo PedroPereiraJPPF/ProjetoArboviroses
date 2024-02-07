@@ -1,7 +1,9 @@
-package com.arboviroses.conectaDengue.Entities.DTO.response;
+package com.arboviroses.conectaDengue.Api.DTO.response;
 
 import java.util.Date;
-import com.arboviroses.conectaDengue.Entities.Notification.Notification;
+
+import com.arboviroses.conectaDengue.Domain.Entities.Notification.Notification;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

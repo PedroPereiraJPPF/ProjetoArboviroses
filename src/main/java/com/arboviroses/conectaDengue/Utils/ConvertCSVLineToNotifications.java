@@ -1,8 +1,9 @@
 package com.arboviroses.conectaDengue.Utils; 
 import java.text.ParseException;
 import java.util.List;
-import com.arboviroses.conectaDengue.Entities.Notification.Notification;
-import com.arboviroses.conectaDengue.Exceptions.InvalidDateStringException;
+
+import com.arboviroses.conectaDengue.Api.Exceptions.InvalidDateStringException;
+import com.arboviroses.conectaDengue.Domain.Entities.Notification.Notification;
 
 public class ConvertCSVLineToNotifications {
     public static Notification convert(String[] line, List<String> header) throws NumberFormatException, InvalidDateStringException, ParseException

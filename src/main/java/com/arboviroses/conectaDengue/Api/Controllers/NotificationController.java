@@ -1,4 +1,4 @@
-package com.arboviroses.conectaDengue.Controllers;
+package com.arboviroses.conectaDengue.Api.Controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -9,11 +9,12 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
-import com.arboviroses.conectaDengue.Entities.DTO.response.DataNotificationInfoDTO;
-import com.arboviroses.conectaDengue.Entities.DTO.response.DataNotificationResponseDTO;
-import com.arboviroses.conectaDengue.Entities.DTO.response.SaveCsvResponseDTO;
-import com.arboviroses.conectaDengue.Exceptions.InvalidAgravoException;
-import com.arboviroses.conectaDengue.Services.Notifications.NotificationService;
+
+import com.arboviroses.conectaDengue.Api.DTO.response.DataNotificationInfoDTO;
+import com.arboviroses.conectaDengue.Api.DTO.response.DataNotificationResponseDTO;
+import com.arboviroses.conectaDengue.Api.DTO.response.SaveCsvResponseDTO;
+import com.arboviroses.conectaDengue.Api.Exceptions.InvalidAgravoException;
+import com.arboviroses.conectaDengue.Domain.Services.Notifications.NotificationService;
 
 import jakarta.servlet.http.HttpServletRequest;
 

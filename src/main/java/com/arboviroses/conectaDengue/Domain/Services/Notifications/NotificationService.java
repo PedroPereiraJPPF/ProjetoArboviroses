@@ -1,4 +1,4 @@
-package com.arboviroses.conectaDengue.Services.Notifications;
+package com.arboviroses.conectaDengue.Domain.Services.Notifications;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -7,20 +7,21 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import com.arboviroses.conectaDengue.Repositories.Notifications.NotificationRepository;
 import com.arboviroses.conectaDengue.Utils.ConvertNameToIdAgravo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-import com.arboviroses.conectaDengue.Entities.DTO.response.DataNotificationInfoDTO;
-import com.arboviroses.conectaDengue.Entities.DTO.response.DataNotificationInfoNoFilterDTO;
-import com.arboviroses.conectaDengue.Entities.DTO.response.DataNotificationResponseDTO;
-import com.arboviroses.conectaDengue.Entities.DTO.response.SaveCsvResponseDTO;
-import com.arboviroses.conectaDengue.Entities.Notification.Notification;
-import com.arboviroses.conectaDengue.Exceptions.InvalidAgravoException;
-import com.arboviroses.conectaDengue.Exceptions.InvalidDateStringException;
+
+import com.arboviroses.conectaDengue.Api.DTO.response.DataNotificationInfoDTO;
+import com.arboviroses.conectaDengue.Api.DTO.response.DataNotificationInfoNoFilterDTO;
+import com.arboviroses.conectaDengue.Api.DTO.response.DataNotificationResponseDTO;
+import com.arboviroses.conectaDengue.Api.DTO.response.SaveCsvResponseDTO;
+import com.arboviroses.conectaDengue.Api.Exceptions.InvalidAgravoException;
+import com.arboviroses.conectaDengue.Api.Exceptions.InvalidDateStringException;
+import com.arboviroses.conectaDengue.Domain.Entities.Notification.Notification;
+import com.arboviroses.conectaDengue.Domain.Repositories.Notifications.NotificationRepository;
 import com.opencsv.CSVReader;
 import com.opencsv.exceptions.CsvException;
 

@@ -4,7 +4,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import com.arboviroses.conectaDengue.Exceptions.InvalidDateStringException;
+import com.arboviroses.conectaDengue.Api.Exceptions.InvalidDateStringException;
 
 public class StringToDateCSV
 {

@@ -3,7 +3,7 @@ package com.arboviroses.conectaDengue.unit.utils;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import com.arboviroses.conectaDengue.Exceptions.InvalidAgravoException;
+import com.arboviroses.conectaDengue.Api.Exceptions.InvalidAgravoException;
 import com.arboviroses.conectaDengue.Utils.ConvertNameToIdAgravo;
 
 public class ConvertNameToIdAgravoTest {

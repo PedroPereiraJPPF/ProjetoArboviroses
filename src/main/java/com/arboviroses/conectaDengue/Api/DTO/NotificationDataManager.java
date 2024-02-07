@@ -1,7 +1,7 @@
-package com.arboviroses.conectaDengue.Entities.DTO;
+package com.arboviroses.conectaDengue.Api.DTO;
 
-import com.arboviroses.conectaDengue.Entities.DTO.response.DataNotificationResponseDTO;
-import com.arboviroses.conectaDengue.Entities.Notification.Notification;
+import com.arboviroses.conectaDengue.Api.DTO.response.DataNotificationResponseDTO;
+import com.arboviroses.conectaDengue.Domain.Entities.Notification.Notification;
 
 public class NotificationDataManager {
     public static DataNotificationResponseDTO NotificationToResponseDTO(Notification notification)

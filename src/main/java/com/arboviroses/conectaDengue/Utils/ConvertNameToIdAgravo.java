@@ -1,6 +1,6 @@
 package com.arboviroses.conectaDengue.Utils;
 
-import com.arboviroses.conectaDengue.Exceptions.InvalidAgravoException;
+import com.arboviroses.conectaDengue.Api.Exceptions.InvalidAgravoException;
 
 public class ConvertNameToIdAgravo {
     public static String convert(String agravo) throws InvalidAgravoException {

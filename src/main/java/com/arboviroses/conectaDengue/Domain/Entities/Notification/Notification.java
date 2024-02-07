@@ -1,4 +1,4 @@
-package com.arboviroses.conectaDengue.Entities.Notification;
+package com.arboviroses.conectaDengue.Domain.Entities.Notification;
 
 import java.util.Date;
 

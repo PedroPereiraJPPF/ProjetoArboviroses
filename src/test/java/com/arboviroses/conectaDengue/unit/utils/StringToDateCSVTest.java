@@ -5,7 +5,8 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import com.arboviroses.conectaDengue.Exceptions.InvalidDateStringException;
+
+import com.arboviroses.conectaDengue.Api.Exceptions.InvalidDateStringException;
 import com.arboviroses.conectaDengue.Utils.StringToDateCSV;
 
 public class StringToDateCSVTest {
