@@ -14,6 +14,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.arboviroses.conectaDengue.Api.DTO.response.CountAgravoBySexoDTO;
 import com.arboviroses.conectaDengue.Api.DTO.response.DataNotificationInfoDTO;
 import com.arboviroses.conectaDengue.Api.DTO.response.DataNotificationInfoNoFilterDTO;
 import com.arboviroses.conectaDengue.Api.DTO.response.DataNotificationResponseDTO;
@@ -85,8 +86,27 @@ public class NotificationService {
             notificationRepository.countByEvolucao("2"),
             notificationRepository.listarBairrosMaisAfetados(),
             notificationRepository.countByIdAgravo("A90"),
-            notificationRepository.countByIdAgravo("A92.0"),
+            notificationRepository.countByIdAgravo("A92.0"), 
             notificationRepository.countByIdAgravo("A928")
+        );
+    }
+
+    public CountAgravoBySexoDTO getNotificationsInfoBySexo(HttpServletRequest request) throws InvalidAgravoException 
+    {
+        if (request.getParameter("agravo") == null || request.getParameter("agravo").isEmpty()) {
+            return new CountAgravoBySexoDTO(
+                    notificationRepository.countBySexo("M"),
+                    notificationRepository.countBySexo("F"),
+                    "NO FILTER"
+                );
+        }
+
+        String agravo = ConvertNameToIdAgravo.convert(request.getParameter("agravo"));
+
+        return new CountAgravoBySexoDTO(
+            notificationRepository.countByIdAgravoAndSexo(agravo, "M"),
+            notificationRepository.countByIdAgravoAndSexo(agravo, "F"),
+            request.getParameter("agravo").toUpperCase()
         );
     }
 

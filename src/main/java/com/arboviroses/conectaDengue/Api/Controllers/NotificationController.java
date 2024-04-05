@@ -11,9 +11,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.arboviroses.conectaDengue.Api.DTO.response.CountAgravoBySexoDTO;
 import com.arboviroses.conectaDengue.Api.DTO.response.DataNotificationInfoDTO;
 import com.arboviroses.conectaDengue.Api.DTO.response.DataNotificationResponseDTO;
 import com.arboviroses.conectaDengue.Api.DTO.response.SaveCsvResponseDTO;
+import com.arboviroses.conectaDengue.Api.DTO.response.SuccessResponseDTO;
 import com.arboviroses.conectaDengue.Api.Exceptions.InvalidAgravoException;
 import com.arboviroses.conectaDengue.Domain.Services.Notifications.NotificationService;
 
@@ -45,7 +47,7 @@ public class NotificationController
     }
 
     @GetMapping("/notifications/getNotificationsCountBySexo")
-    public ResponseEntity<DataNotificationInfoDTO> get(HttpServletRequest request) throws InvalidAgravoException {
-        return ResponseEntity.ok().body(notificationService.getNotificationsInfoForGraphicsByIdAgravo(request));
+    public ResponseEntity<SuccessResponseDTO<CountAgravoBySexoDTO>> get(HttpServletRequest request) throws InvalidAgravoException {
+        return ResponseEntity.ok().body(SuccessResponseDTO.setResponse(notificationService.getNotificationsInfoBySexo(request), null));
     }
 }

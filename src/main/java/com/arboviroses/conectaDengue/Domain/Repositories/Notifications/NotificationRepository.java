@@ -46,4 +46,6 @@ public interface NotificationRepository extends JpaRepository<Notification, Long
         order by count(n.nomeBairro) desc
         """)
     List<BairroCountDTO> listarBairrosMaisAfetadosByIdAgravo(String idAgravo);
+
+    
 }
