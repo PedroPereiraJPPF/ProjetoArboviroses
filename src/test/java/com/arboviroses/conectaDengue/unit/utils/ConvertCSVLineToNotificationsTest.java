@@ -10,7 +10,7 @@ import java.util.List;
 import java.text.ParseException;
 import java.util.Arrays;
 
-import static com.arboviroses.conectaDengue.Utils.ConvertCSVLineToNotifications.convert;
+import static com.arboviroses.conectaDengue.Utils.ConvertCSVLineToNotifications.convertCsvLineToNotificationObject;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class ConvertCSVLineToNotificationsTest {
@@ -33,7 +33,7 @@ public class ConvertCSVLineToNotificationsTest {
         );
 
         // act
-        Notification notification = convert(line, header);
+        Notification notification = convertCsvLineToNotificationObject(line, header);
 
         // assert
         Assertions.assertThat(notification).isNotNull();

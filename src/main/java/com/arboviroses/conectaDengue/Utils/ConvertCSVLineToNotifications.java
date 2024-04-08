@@ -6,7 +6,7 @@ import com.arboviroses.conectaDengue.Api.Exceptions.InvalidDateStringException;
 import com.arboviroses.conectaDengue.Domain.Entities.Notification.Notification;
 
 public class ConvertCSVLineToNotifications {
-    public static Notification convert(String[] line, List<String> header) throws NumberFormatException, InvalidDateStringException, ParseException
+    public static Notification convertCsvLineToNotificationObject(String[] line, List<String> header) throws NumberFormatException, InvalidDateStringException, ParseException
     {
         return new Notification(
             Long.valueOf(line[header.indexOf("NU_NOTIFIC")]),

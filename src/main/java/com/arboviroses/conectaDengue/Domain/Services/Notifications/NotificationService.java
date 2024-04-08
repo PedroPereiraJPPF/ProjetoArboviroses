@@ -8,6 +8,9 @@ import java.util.Arrays;
 import java.util.List;
 
 import com.arboviroses.conectaDengue.Utils.ConvertNameToIdAgravo;
+import com.arboviroses.conectaDengue.Utils.MossoroData.NeighborhoodsMossoro;
+import com.arboviroses.conectaDengue.Utils.Search.SearchAlgorithms;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -26,7 +29,7 @@ import com.arboviroses.conectaDengue.Domain.Repositories.Notifications.Notificat
 import com.opencsv.CSVReader;
 import com.opencsv.exceptions.CsvException;
 
-import static com.arboviroses.conectaDengue.Utils.ConvertCSVLineToNotifications.convert;
+import static com.arboviroses.conectaDengue.Utils.ConvertCSVLineToNotifications.convertCsvLineToNotificationObject;
 
 import jakarta.servlet.http.HttpServletRequest;
 
@@ -38,6 +41,8 @@ public class NotificationService {
     public SaveCsvResponseDTO saveCSVDataInDatabase(MultipartFile file) throws IOException, CsvException, NumberFormatException, ParseException, InvalidDateStringException
     {
         try (CSVReader csvReader = new CSVReader(new InputStreamReader(file.getInputStream()))) {
+            NeighborhoodsMossoro neighborhoods = new NeighborhoodsMossoro();
+            String neighborhoodFromNotification;
             List<String[]> csvLines = csvReader.readAll();
             List<Notification> notifications = new ArrayList<>();
             List<String> header = Arrays.asList(csvLines.get(0));
@@ -45,7 +50,12 @@ public class NotificationService {
 
             for(String[] csvLine : csvLines) {
                 try {
-                    notifications.add(convert(csvLine, header));
+                    neighborhoodFromNotification = csvLine[header.indexOf("NM_BAIRRO")];
+                    
+                    if((neighborhoodFromNotification = neighborhoods.search(neighborhoodFromNotification)) != null) {
+                        csvLine[header.indexOf("NM_BAIRRO")] = neighborhoodFromNotification;
+                        notifications.add(convertCsvLineToNotificationObject(csvLine, header));
+                    }
                 } catch (Exception e) {
                     // no futuro pode ser adicionada uma tabela para salvar esses dados
                     System.out.println(e.getMessage());
