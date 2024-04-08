@@ -11,7 +11,7 @@ public class SuccessResponseDTO<E> {
 
     public SuccessResponseDTO(E data, String message) 
     {
-        this.message = message == null ? "Success" : message;
+        this.message = message == null ? "success" : message;
         this.setData(data);
     }
 

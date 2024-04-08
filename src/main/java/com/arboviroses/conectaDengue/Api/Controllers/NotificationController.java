@@ -32,22 +32,28 @@ public class NotificationController
     NotificationService notificationService;
 
     @PostMapping("/savecsvdata")
-    public ResponseEntity<SaveCsvResponseDTO> readCsv(@RequestParam("csv_file") MultipartFile file) throws Exception {
-        return ResponseEntity.ok().body(notificationService.saveCSVDataInDatabase(file));
+    public ResponseEntity<SuccessResponseDTO<SaveCsvResponseDTO>> readCsv(@RequestParam("csv_file") MultipartFile file) throws Exception {
+        return ResponseEntity.ok().body(SuccessResponseDTO.setResponse(notificationService.saveCSVDataInDatabase(file), "dados do csv salvos com sucesso"));
     }
 
     @GetMapping("/notifications")
-    public ResponseEntity<Page<DataNotificationResponseDTO>> getAll(Pageable pageable, HttpServletRequest request) throws InvalidAgravoException {
-        return ResponseEntity.ok().body(notificationService.getNotificationsByIdAgravoPaginated(pageable, request));
-    }
-
-    @GetMapping("/notifications/getinfo")
-    public ResponseEntity<DataNotificationInfoDTO> getNotificationsBySexo(HttpServletRequest request) throws InvalidAgravoException {
-        return ResponseEntity.ok().body(notificationService.getNotificationsInfoForGraphicsByIdAgravo(request));
+    public ResponseEntity<SuccessResponseDTO<Page<DataNotificationResponseDTO>>> getAll(Pageable pageable, HttpServletRequest request) throws InvalidAgravoException {
+        return ResponseEntity.ok().body(SuccessResponseDTO.setResponse(notificationService.getNotificationsByIdAgravoPaginated(pageable, request), null));
     }
 
     @GetMapping("/notifications/getNotificationsCountBySexo")
     public ResponseEntity<SuccessResponseDTO<CountAgravoBySexoDTO>> get(HttpServletRequest request) throws InvalidAgravoException {
         return ResponseEntity.ok().body(SuccessResponseDTO.setResponse(notificationService.getNotificationsInfoBySexo(request), null));
+    }
+
+    /**
+     * @comment esse endpoint serve para testes
+     * @param request
+     * @return
+     * @throws InvalidAgravoException
+     */
+    @GetMapping("/notifications/getinfo")
+    public ResponseEntity<DataNotificationInfoDTO> getNotificationsBySexo(HttpServletRequest request) throws InvalidAgravoException {
+        return ResponseEntity.ok().body(notificationService.getNotificationsInfoForGraphicsByIdAgravo(request));
     }
 }

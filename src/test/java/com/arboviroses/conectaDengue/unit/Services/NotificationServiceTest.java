@@ -47,8 +47,7 @@ public class NotificationServiceTest {
         SaveCsvResponseDTO responseDTO = notificationService.saveCSVDataInDatabase(mockMultipartFile);
 
         Assertions.assertThat(responseDTO).isNotNull();
-        assertEquals("sucesso", responseDTO.getData());
-        assertEquals("dados do csv salvos com sucesso", responseDTO.getMessage());
+        assertEquals(true, responseDTO.getData());
     }
 
     @Test

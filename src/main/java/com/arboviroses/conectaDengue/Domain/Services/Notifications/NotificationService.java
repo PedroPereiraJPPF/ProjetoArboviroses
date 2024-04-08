@@ -54,7 +54,7 @@ public class NotificationService {
 
             notificationRepository.saveAll(notifications);
 
-            return new SaveCsvResponseDTO("sucesso", "dados do csv salvos com sucesso");
+            return new SaveCsvResponseDTO(true);
         }
     } 
 
