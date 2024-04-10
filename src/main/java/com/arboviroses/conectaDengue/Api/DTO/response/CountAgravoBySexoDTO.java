@@ -11,12 +11,5 @@ import lombok.Setter;
 @NoArgsConstructor
 public class CountAgravoBySexoDTO 
 {
-    private long masculine, feminine;    
-    private String agravoName;
-
-    public CountAgravoBySexoDTO(long masculine, long feminine) 
-    {
-        setMasculine(masculine);
-        setFeminine(feminine);
-    }
+    private long masculine, feminine; 
 }

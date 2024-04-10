@@ -9,7 +9,6 @@ import java.util.List;
 
 import com.arboviroses.conectaDengue.Utils.ConvertNameToIdAgravo;
 import com.arboviroses.conectaDengue.Utils.MossoroData.NeighborhoodsMossoro;
-import com.arboviroses.conectaDengue.Utils.Search.SearchAlgorithms;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -25,6 +24,7 @@ import com.arboviroses.conectaDengue.Api.DTO.response.SaveCsvResponseDTO;
 import com.arboviroses.conectaDengue.Api.Exceptions.InvalidAgravoException;
 import com.arboviroses.conectaDengue.Api.Exceptions.InvalidDateStringException;
 import com.arboviroses.conectaDengue.Domain.Entities.Notification.Notification;
+import com.arboviroses.conectaDengue.Domain.Filters.NotificationFilters;
 import com.arboviroses.conectaDengue.Domain.Repositories.Notifications.NotificationRepository;
 import com.opencsv.CSVReader;
 import com.opencsv.exceptions.CsvException;
@@ -103,21 +103,7 @@ public class NotificationService {
 
     public CountAgravoBySexoDTO getNotificationsInfoBySexo(HttpServletRequest request) throws InvalidAgravoException 
     {
-        if (request.getParameter("agravo") == null || request.getParameter("agravo").isEmpty()) {
-            return new CountAgravoBySexoDTO(
-                    notificationRepository.countBySexo("M"),
-                    notificationRepository.countBySexo("F"),
-                    "NO FILTER"
-                );
-        }
-
-        String agravo = ConvertNameToIdAgravo.convert(request.getParameter("agravo"));
-
-        return new CountAgravoBySexoDTO(
-            notificationRepository.countByIdAgravoAndSexo(agravo, "M"),
-            notificationRepository.countByIdAgravoAndSexo(agravo, "F"),
-            request.getParameter("agravo").toUpperCase()
-        );
+        return NotificationFilters.filtersForNotificationsInfoBySexo(request, notificationRepository);
     }
 
     public DataNotificationInfoDTO getNotificationsInfoForGraphicsByIdAgravo(HttpServletRequest request) throws InvalidAgravoException
