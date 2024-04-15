@@ -6,5 +6,6 @@ create table notifications(
     classificacao varchar(2),
     sexo varchar(2),
     nome_bairro varchar(100),
-    evolucao varchar(20)
+    evolucao varchar(20),
+    semanaEpidemiologica integer
 )

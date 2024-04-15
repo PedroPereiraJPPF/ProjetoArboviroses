@@ -28,4 +28,5 @@ public class Notification {
     private String sexo;
     private String nomeBairro;
     private String evolucao;  
+    private int semanaEpidemiologica;
 }

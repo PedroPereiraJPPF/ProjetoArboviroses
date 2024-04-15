@@ -41,7 +41,7 @@ public class NotificationController
         return ResponseEntity.ok().body(SuccessResponseDTO.setResponse(notificationService.getNotificationsByIdAgravoPaginated(pageable, request), null));
     }
 
-    @GetMapping("/notifications/getNotificationsCountBySexo")
+    @GetMapping("/notifications/count/sexo")
     public ResponseEntity<SuccessResponseDTO<CountAgravoBySexoDTO>> get(HttpServletRequest request) throws InvalidAgravoException {
         return ResponseEntity.ok().body(SuccessResponseDTO.setResponse(notificationService.getNotificationsInfoBySexo(request), null));
     }
