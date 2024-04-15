@@ -1,5 +1,8 @@
 package com.arboviroses.conectaDengue.Domain.Filters;
 
+import java.util.List;
+
+import com.arboviroses.conectaDengue.Api.DTO.response.AgravoCountBySemanaEpidemiologica;
 import com.arboviroses.conectaDengue.Api.DTO.response.CountAgravoBySexoDTO;
 import com.arboviroses.conectaDengue.Api.Exceptions.InvalidAgravoException;
 import com.arboviroses.conectaDengue.Domain.Repositories.Notifications.NotificationRepository;
@@ -10,7 +13,7 @@ import jakarta.servlet.http.HttpServletRequest;
 public class NotificationFilters {
     public static CountAgravoBySexoDTO filtersForNotificationsInfoBySexo(HttpServletRequest request, NotificationRepository notificationRepository) throws InvalidAgravoException
     {
-        String date = request.getParameter("year");
+        Integer date = request.getParameter("year") != null ? Integer.valueOf(request.getParameter("year")) : null;
         String agravoName = request.getParameter("agravo");
         String agravoId = null;
 
@@ -21,13 +24,13 @@ public class NotificationFilters {
         if (date != null) {
             if (agravoId != null) {
                 return new CountAgravoBySexoDTO(
-                    notificationRepository.countByIdAgravoAndSexoAndYearNotification(agravoId, "M", Long.valueOf(date)),
-                    notificationRepository.countByIdAgravoAndSexoAndYearNotification(agravoId, "F", Long.valueOf(date))
+                    notificationRepository.countByIdAgravoAndSexoAndYearNotification(agravoId, "M", date),
+                    notificationRepository.countByIdAgravoAndSexoAndYearNotification(agravoId, "F", date)
                 );
             } else {
                 return new CountAgravoBySexoDTO(
-                    notificationRepository.countBySexoAndYearNotification("M", Long.valueOf(date)),
-                    notificationRepository.countBySexoAndYearNotification("F", Long.valueOf(date))
+                    notificationRepository.countBySexoAndYearNotification("M", date),
+                    notificationRepository.countBySexoAndYearNotification("F", date)
                 );
             }
 
@@ -44,5 +47,26 @@ public class NotificationFilters {
             notificationRepository.countBySexo("M"),
             notificationRepository.countBySexo("F")
         );
+    }
+
+    public static List<AgravoCountBySemanaEpidemiologica> filtersForNotificationsInfoBySemanaEpidemiologica(HttpServletRequest request, NotificationRepository notificationRepository) throws InvalidAgravoException
+    {
+        Integer date = request.getParameter("year") != null ? Integer.valueOf(request.getParameter("year")) : null;
+        String agravoName = request.getParameter("agravo");
+        String agravoId = null;
+
+        if (agravoName != null) {
+            agravoId = ConvertNameToIdAgravo.convert(agravoName);
+        }
+
+        if (date != null) {
+            if (agravoId != null) {
+                return notificationRepository.listarContagemPorSemanaEpidemiologica(agravoId, date);
+            }
+
+            return notificationRepository.listarContagemPorSemanaEpidemiologica(date);
+        } 
+
+        return notificationRepository.listarContagemPorSemanaEpidemiologica();
     }
 }

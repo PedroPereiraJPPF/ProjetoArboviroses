@@ -47,8 +47,8 @@ public class NotificationController
         return ResponseEntity.ok().body(SuccessResponseDTO.setResponse(notificationService.getNotificationsInfoBySexo(request), null));
     }
 
-    @GetMapping("/notifications/count/semanaepidemiologica")
-    public ResponseEntity<SuccessResponseDTO<List<AgravoCountBySemanaEpidemiologica>>> getSemana(HttpServletRequest request) {
+    @GetMapping("/notifications/count/epidemiologicalWeek")
+    public ResponseEntity<SuccessResponseDTO<List<AgravoCountBySemanaEpidemiologica>>> getSemana(HttpServletRequest request) throws InvalidAgravoException {
         return ResponseEntity.ok().body(SuccessResponseDTO.setResponse(notificationService.countNotificationsBySemanaEpidemiologica(request), null));
     }
     

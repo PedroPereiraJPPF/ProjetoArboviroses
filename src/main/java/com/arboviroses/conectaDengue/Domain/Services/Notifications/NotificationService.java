@@ -92,13 +92,9 @@ public class NotificationService {
         return NotificationFilters.filtersForNotificationsInfoBySexo(request, notificationRepository);
     }
 
-    public List<AgravoCountBySemanaEpidemiologica> countNotificationsBySemanaEpidemiologica(HttpServletRequest request)
+    public List<AgravoCountBySemanaEpidemiologica> countNotificationsBySemanaEpidemiologica(HttpServletRequest request) throws InvalidAgravoException
     {
-        if (request.getParameter("year") != null) {
-            return notificationRepository.listarContagemPorSemanaEpidemiologica(Integer.valueOf(request.getParameter("year")));   
-        }
-
-        return notificationRepository.listarContagemPorSemanaEpidemiologica();   
+        return NotificationFilters.filtersForNotificationsInfoBySemanaEpidemiologica(request, notificationRepository); 
     }
 
     /**

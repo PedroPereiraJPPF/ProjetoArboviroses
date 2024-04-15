@@ -48,6 +48,13 @@ public interface NotificationRepository extends JpaRepository<Notification, Long
 
     @Query("""
             Select new com.arboviroses.conectaDengue.Api.DTO.response.AgravoCountBySemanaEpidemiologica(n.semanaEpidemiologica, count(n.idNotification)) 
+            from Notification as n
+            group by n.semanaEpidemiologica
+            """)
+    List<AgravoCountBySemanaEpidemiologica> listarContagemPorSemanaEpidemiologica();
+
+    @Query("""
+            Select new com.arboviroses.conectaDengue.Api.DTO.response.AgravoCountBySemanaEpidemiologica(n.semanaEpidemiologica, count(n.idNotification)) 
             from Notification as n where YEAR(n.dataNotification) = :year 
             group by n.semanaEpidemiologica
             """)
@@ -55,10 +62,10 @@ public interface NotificationRepository extends JpaRepository<Notification, Long
 
     @Query("""
             Select new com.arboviroses.conectaDengue.Api.DTO.response.AgravoCountBySemanaEpidemiologica(n.semanaEpidemiologica, count(n.idNotification)) 
-            from Notification as n
+            from Notification as n where YEAR(n.dataNotification) = :year and n.idAgravo = :agravo
             group by n.semanaEpidemiologica
             """)
-    List<AgravoCountBySemanaEpidemiologica> listarContagemPorSemanaEpidemiologica();
+    List<AgravoCountBySemanaEpidemiologica> listarContagemPorSemanaEpidemiologica(String agravo, int year);
 
     @Query("""
         SELECT new com.arboviroses.conectaDengue.Api.DTO.response.BairroCountDTO(n.nomeBairro, count(n.nomeBairro)) FROM Notification as n
