@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.arboviroses.conectaDengue.Api.DTO.response.AgravoCountBySemanaEpidemiologica;
 import com.arboviroses.conectaDengue.Api.DTO.response.CountAgravoBySexoDTO;
 import com.arboviroses.conectaDengue.Api.DTO.response.DataNotificationInfoDTO;
 import com.arboviroses.conectaDengue.Api.DTO.response.DataNotificationResponseDTO;
@@ -21,7 +22,7 @@ import com.arboviroses.conectaDengue.Domain.Services.Notifications.NotificationS
 
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.web.bind.annotation.RequestMapping;
-
+import java.util.List;
 
 @RestController
 @RequestMapping("api")
@@ -45,6 +46,12 @@ public class NotificationController
     public ResponseEntity<SuccessResponseDTO<CountAgravoBySexoDTO>> get(HttpServletRequest request) throws InvalidAgravoException {
         return ResponseEntity.ok().body(SuccessResponseDTO.setResponse(notificationService.getNotificationsInfoBySexo(request), null));
     }
+
+    @GetMapping("/notifications/count/semanaepidemiologica")
+    public ResponseEntity<SuccessResponseDTO<List<AgravoCountBySemanaEpidemiologica>>> getSemana(HttpServletRequest request) {
+        return ResponseEntity.ok().body(SuccessResponseDTO.setResponse(notificationService.countNotificationsBySemanaEpidemiologica(request), null));
+    }
+    
 
     /**
      * @comment esse endpoint serve para testes

@@ -8,6 +8,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import com.arboviroses.conectaDengue.Api.DTO.response.AgravoCountBySemanaEpidemiologica;
+import com.arboviroses.conectaDengue.Api.DTO.response.AgravoCountBySemanaEpidemiologica;
 import com.arboviroses.conectaDengue.Api.DTO.response.BairroCountDTO;
 import com.arboviroses.conectaDengue.Domain.Entities.Notification.Notification;
 
@@ -43,6 +45,20 @@ public interface NotificationRepository extends JpaRepository<Notification, Long
     long countByNomeBairro(String nomeBairro);
 
     long countByDataNascimentoBetween(Date dataInicio, Date dataFinal);
+
+    @Query("""
+            Select new com.arboviroses.conectaDengue.Api.DTO.response.AgravoCountBySemanaEpidemiologica(n.semanaEpidemiologica, count(n.idNotification)) 
+            from Notification as n where YEAR(n.dataNotification) = :year 
+            group by n.semanaEpidemiologica
+            """)
+    List<AgravoCountBySemanaEpidemiologica> listarContagemPorSemanaEpidemiologica(int year);
+
+    @Query("""
+            Select new com.arboviroses.conectaDengue.Api.DTO.response.AgravoCountBySemanaEpidemiologica(n.semanaEpidemiologica, count(n.idNotification)) 
+            from Notification as n
+            group by n.semanaEpidemiologica
+            """)
+    List<AgravoCountBySemanaEpidemiologica> listarContagemPorSemanaEpidemiologica();
 
     @Query("""
         SELECT new com.arboviroses.conectaDengue.Api.DTO.response.BairroCountDTO(n.nomeBairro, count(n.nomeBairro)) FROM Notification as n

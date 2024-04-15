@@ -16,6 +16,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.arboviroses.conectaDengue.Api.DTO.response.AgravoCountBySemanaEpidemiologica;
 import com.arboviroses.conectaDengue.Api.DTO.response.CountAgravoBySexoDTO;
 import com.arboviroses.conectaDengue.Api.DTO.response.DataNotificationInfoDTO;
 import com.arboviroses.conectaDengue.Api.DTO.response.DataNotificationInfoNoFilterDTO;
@@ -86,6 +87,25 @@ public class NotificationService {
         return notifications.map(DataNotificationResponseDTO::new);
     }
 
+    public CountAgravoBySexoDTO getNotificationsInfoBySexo(HttpServletRequest request) throws InvalidAgravoException 
+    {
+        return NotificationFilters.filtersForNotificationsInfoBySexo(request, notificationRepository);
+    }
+
+    public List<AgravoCountBySemanaEpidemiologica> countNotificationsBySemanaEpidemiologica(HttpServletRequest request)
+    {
+        if (request.getParameter("year") != null) {
+            return notificationRepository.listarContagemPorSemanaEpidemiologica(Integer.valueOf(request.getParameter("year")));   
+        }
+
+        return notificationRepository.listarContagemPorSemanaEpidemiologica();   
+    }
+
+    /**
+     * @test essas são funções feitas para testes, não devem ficar disponiveis em produção
+     * @return
+     */
+
     public DataNotificationInfoDTO getNotificationsInfoForGraphics()
     {
         return new DataNotificationInfoNoFilterDTO(
@@ -99,11 +119,6 @@ public class NotificationService {
             notificationRepository.countByIdAgravo("A92.0"), 
             notificationRepository.countByIdAgravo("A928")
         );
-    }
-
-    public CountAgravoBySexoDTO getNotificationsInfoBySexo(HttpServletRequest request) throws InvalidAgravoException 
-    {
-        return NotificationFilters.filtersForNotificationsInfoBySexo(request, notificationRepository);
     }
 
     public DataNotificationInfoDTO getNotificationsInfoForGraphicsByIdAgravo(HttpServletRequest request) throws InvalidAgravoException
