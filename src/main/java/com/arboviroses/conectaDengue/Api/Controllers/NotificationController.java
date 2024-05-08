@@ -51,6 +51,11 @@ public class NotificationController
         return ResponseEntity.ok().body(SuccessResponseDTO.setResponse(notificationService.countNotificationsBySemanaEpidemiologica(request), null));
     }
 
+    @GetMapping("/notifications/count/epidemiologicalWeek/accumulated")
+    public ResponseEntity<SuccessResponseDTO<AgravoCountByEpidemiologicalSemanaEpidemiologicaResponse>> getSemanaAccumulated(HttpServletRequest request) throws InvalidAgravoException {
+        return ResponseEntity.ok().body(SuccessResponseDTO.setResponse(notificationService.countNotificationsBySemanaEpidemiologicaAccumulated(request), null));
+    }
+
     @GetMapping("/notifications/count/ageRange")
     public ResponseEntity<SuccessResponseDTO<AgravoCountByAgeRange>> getByAgeRange(HttpServletRequest request) throws InvalidAgravoException {
         return ResponseEntity.ok().body(SuccessResponseDTO.setResponse(notificationService.getNotificationsCountByAgeRange(request), null));
