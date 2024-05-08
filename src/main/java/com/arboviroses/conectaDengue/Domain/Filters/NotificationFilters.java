@@ -1,6 +1,7 @@
 package com.arboviroses.conectaDengue.Domain.Filters;
 
 import java.util.List;
+import java.util.Map;
 
 import com.arboviroses.conectaDengue.Api.DTO.response.AgravoCountBySemanaEpidemiologica;
 import com.arboviroses.conectaDengue.Api.DTO.response.CountAgravoBySexoDTO;
@@ -68,5 +69,25 @@ public class NotificationFilters {
         } 
 
         return notificationRepository.listarContagemPorSemanaEpidemiologica();
+    }
+
+    public static Map<String, Integer> filtersForNotificationsByAgeRange(HttpServletRequest request, NotificationRepository notificationRepository) throws InvalidAgravoException {
+        Integer year = request.getParameter("year") != null ? Integer.valueOf(request.getParameter("year")) : null;
+        String agravoName = request.getParameter("agravo");
+        String agravoId = null;
+
+        if (agravoName != null) {
+            agravoId = ConvertNameToIdAgravo.convert(agravoName);
+        }
+
+        if (year != null) {
+            if (agravoId != null) {
+                return notificationRepository.listarContagemPorFaixaDeIdadeByIdAgravo(agravoId, year);
+            }
+
+            return notificationRepository.listarContagemPorFaixaDeIdade(year);
+        }
+
+        return notificationRepository.listarContagemPorFaixaDeIdade();
     }
 }

@@ -1,13 +1,17 @@
 package com.arboviroses.conectaDengue.Domain.Repositories.Notifications;
 
 import java.sql.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import com.arboviroses.conectaDengue.Api.DTO.AgeGroupCountDTO;
 import com.arboviroses.conectaDengue.Api.DTO.response.AgravoCountBySemanaEpidemiologica;
 import com.arboviroses.conectaDengue.Api.DTO.response.BairroCountDTO;
 import com.arboviroses.conectaDengue.Domain.Entities.Notification.Notification;
@@ -84,5 +88,51 @@ public interface NotificationRepository extends JpaRepository<Notification, Long
         """)
     List<BairroCountDTO> listarBairrosMaisAfetadosByIdAgravo(String idAgravo);
 
-    
+    @Query("""
+        SELECT
+            SUM(CASE WHEN idade BETWEEN 0 AND 10 THEN 1 ELSE 0 END) AS age0to10,
+            SUM(CASE WHEN idade BETWEEN 11 AND 20 THEN 1 ELSE 0 END) AS age11to20,
+            SUM(CASE WHEN idade BETWEEN 21 AND 30 THEN 1 ELSE 0 END) AS age21to30,
+            SUM(CASE WHEN idade BETWEEN 31 AND 40 THEN 1 ELSE 0 END) AS age31to40,
+            SUM(CASE WHEN idade BETWEEN 41 AND 50 THEN 1 ELSE 0 END) AS age41to50,
+            SUM(CASE WHEN idade BETWEEN 51 AND 60 THEN 1 ELSE 0 END) AS age51to60,
+            SUM(CASE WHEN idade > 60 THEN 1 ELSE 0 END) AS ageOver60
+        FROM (
+            SELECT TIMESTAMPDIFF(YEAR, n.dataNascimento, CURDATE()) AS idade
+            FROM Notification as n
+        ) AS tabela_idades
+    """)
+    Map<String, Integer> listarContagemPorFaixaDeIdade();
+
+    @Query("""
+        SELECT
+            SUM(CASE WHEN idade BETWEEN 0 AND 10 THEN 1 ELSE 0 END) AS age0to10,
+            SUM(CASE WHEN idade BETWEEN 11 AND 20 THEN 1 ELSE 0 END) AS age11to20,
+            SUM(CASE WHEN idade BETWEEN 21 AND 30 THEN 1 ELSE 0 END) AS age21to30,
+            SUM(CASE WHEN idade BETWEEN 31 AND 40 THEN 1 ELSE 0 END) AS age31to40,
+            SUM(CASE WHEN idade BETWEEN 41 AND 50 THEN 1 ELSE 0 END) AS age41to50,
+            SUM(CASE WHEN idade BETWEEN 51 AND 60 THEN 1 ELSE 0 END) AS age51to60,
+            SUM(CASE WHEN idade > 60 THEN 1 ELSE 0 END) AS ageOver60
+        FROM (
+            SELECT TIMESTAMPDIFF(YEAR, n.dataNascimento, CURDATE()) AS idade
+            FROM Notification as n where YEAR(n.dataNotification) = :year
+        ) AS tabela_idades
+    """)
+    Map<String, Integer> listarContagemPorFaixaDeIdade(int year);
+
+    @Query("""
+        SELECT
+            SUM(CASE WHEN idade BETWEEN 0 AND 10 THEN 1 ELSE 0 END) AS age0to10,
+            SUM(CASE WHEN idade BETWEEN 11 AND 20 THEN 1 ELSE 0 END) AS age11to20,
+            SUM(CASE WHEN idade BETWEEN 21 AND 30 THEN 1 ELSE 0 END) AS age21to30,
+            SUM(CASE WHEN idade BETWEEN 31 AND 40 THEN 1 ELSE 0 END) AS age31to40,
+            SUM(CASE WHEN idade BETWEEN 41 AND 50 THEN 1 ELSE 0 END) AS age41to50,
+            SUM(CASE WHEN idade BETWEEN 51 AND 60 THEN 1 ELSE 0 END) AS age51to60,
+            SUM(CASE WHEN idade > 60 THEN 1 ELSE 0 END) AS ageOver60
+        FROM (
+            SELECT TIMESTAMPDIFF(YEAR, n.dataNascimento, CURDATE()) AS idade
+            FROM Notification as n where YEAR(n.dataNotification) = :year and n.idAgravo = :idAgravo
+        ) AS tabela_idades
+    """)
+    Map<String, Integer> listarContagemPorFaixaDeIdadeByIdAgravo(String idAgravo, int year);
 }

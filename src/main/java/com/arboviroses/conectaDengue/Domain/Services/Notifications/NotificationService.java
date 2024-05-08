@@ -16,7 +16,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.arboviroses.conectaDengue.Api.DTO.response.AgravoCountBySemanaEpidemiologica;
+import com.arboviroses.conectaDengue.Api.DTO.response.AgravoCountByAgeRange;
+import com.arboviroses.conectaDengue.Api.DTO.response.AgravoCountByEpidemiologicalSemanaEpidemiologicaResponse;
 import com.arboviroses.conectaDengue.Api.DTO.response.CountAgravoBySexoDTO;
 import com.arboviroses.conectaDengue.Api.DTO.response.DataNotificationInfoDTO;
 import com.arboviroses.conectaDengue.Api.DTO.response.DataNotificationInfoNoFilterDTO;
@@ -92,9 +93,13 @@ public class NotificationService {
         return NotificationFilters.filtersForNotificationsInfoBySexo(request, notificationRepository);
     }
 
-    public List<AgravoCountBySemanaEpidemiologica> countNotificationsBySemanaEpidemiologica(HttpServletRequest request) throws InvalidAgravoException
+    public AgravoCountByEpidemiologicalSemanaEpidemiologicaResponse countNotificationsBySemanaEpidemiologica(HttpServletRequest request) throws InvalidAgravoException
     {
-        return NotificationFilters.filtersForNotificationsInfoBySemanaEpidemiologica(request, notificationRepository); 
+        return new AgravoCountByEpidemiologicalSemanaEpidemiologicaResponse(NotificationFilters.filtersForNotificationsInfoBySemanaEpidemiologica(request, notificationRepository)); 
+    }
+
+    public AgravoCountByAgeRange getNotificationsCountByAgeRange(HttpServletRequest request) throws InvalidAgravoException {
+        return new AgravoCountByAgeRange(NotificationFilters.filtersForNotificationsByAgeRange(request, notificationRepository));
     }
 
     /**
