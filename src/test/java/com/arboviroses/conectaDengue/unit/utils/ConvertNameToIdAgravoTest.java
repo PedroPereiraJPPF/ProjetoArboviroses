@@ -15,8 +15,8 @@ public class ConvertNameToIdAgravoTest {
         String chikungunya = ConvertNameToIdAgravo.convert("chikungunya");
 
         Assertions.assertEquals(dengue, "A90");
-        Assertions.assertEquals(zika, "A92.0");
-        Assertions.assertEquals(chikungunya, "A928");
+        Assertions.assertEquals(zika, "A928");
+        Assertions.assertEquals(chikungunya, "A92.0");
     }
 
     @Test

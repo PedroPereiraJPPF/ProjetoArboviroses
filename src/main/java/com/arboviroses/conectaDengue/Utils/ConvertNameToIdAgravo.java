@@ -5,13 +5,13 @@ import com.arboviroses.conectaDengue.Api.Exceptions.InvalidAgravoException;
 public class ConvertNameToIdAgravo {
     public static String convert(String agravo) throws InvalidAgravoException {
         switch(agravo.toUpperCase()) {
-            case "ZIKA":
+            case "CHIKUNGUNYA":
                 agravo = "A92.0";
                 break;
             case "DENGUE":
                 agravo = "A90";
                 break;
-            case "CHIKUNGUNYA":
+            case "ZIKA":
                 agravo = "A928";
                 break;
             default: 

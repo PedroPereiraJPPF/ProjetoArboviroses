@@ -9,7 +9,6 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import com.arboviroses.conectaDengue.Api.DTO.response.AgravoCountBySemanaEpidemiologica;
-import com.arboviroses.conectaDengue.Api.DTO.response.AgravoCountBySemanaEpidemiologica;
 import com.arboviroses.conectaDengue.Api.DTO.response.BairroCountDTO;
 import com.arboviroses.conectaDengue.Domain.Entities.Notification.Notification;
 
@@ -47,23 +46,26 @@ public interface NotificationRepository extends JpaRepository<Notification, Long
     long countByDataNascimentoBetween(Date dataInicio, Date dataFinal);
 
     @Query("""
-            Select new com.arboviroses.conectaDengue.Api.DTO.response.AgravoCountBySemanaEpidemiologica(n.semanaEpidemiologica, count(n.idNotification)) 
+            Select new com.arboviroses.conectaDengue.Api.DTO.response.AgravoCountBySemanaEpidemiologica(n.semanaEpidemiologica, count(n.idNotification), n.idAgravo) 
             from Notification as n
-            group by n.semanaEpidemiologica
+            group by n.semanaEpidemiologica, n.idAgravo
+            ORDER BY n.semanaEpidemiologica
             """)
     List<AgravoCountBySemanaEpidemiologica> listarContagemPorSemanaEpidemiologica();
 
     @Query("""
-            Select new com.arboviroses.conectaDengue.Api.DTO.response.AgravoCountBySemanaEpidemiologica(n.semanaEpidemiologica, count(n.idNotification)) 
+            Select new com.arboviroses.conectaDengue.Api.DTO.response.AgravoCountBySemanaEpidemiologica(n.semanaEpidemiologica, count(n.idNotification), n.idAgravo) 
             from Notification as n where YEAR(n.dataNotification) = :year 
-            group by n.semanaEpidemiologica
+            group by n.semanaEpidemiologica, n.idAgravo
+            ORDER BY n.semanaEpidemiologica
             """)
     List<AgravoCountBySemanaEpidemiologica> listarContagemPorSemanaEpidemiologica(int year);
 
     @Query("""
-            Select new com.arboviroses.conectaDengue.Api.DTO.response.AgravoCountBySemanaEpidemiologica(n.semanaEpidemiologica, count(n.idNotification)) 
+            Select new com.arboviroses.conectaDengue.Api.DTO.response.AgravoCountBySemanaEpidemiologica(n.semanaEpidemiologica, count(n.idNotification), n.idAgravo) 
             from Notification as n where YEAR(n.dataNotification) = :year and n.idAgravo = :agravo
-            group by n.semanaEpidemiologica
+            group by n.semanaEpidemiologica, n.idAgravo
+            ORDER BY n.semanaEpidemiologica
             """)
     List<AgravoCountBySemanaEpidemiologica> listarContagemPorSemanaEpidemiologica(String agravo, int year);
 
