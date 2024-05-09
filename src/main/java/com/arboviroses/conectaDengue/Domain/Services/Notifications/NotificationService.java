@@ -18,6 +18,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.arboviroses.conectaDengue.Api.DTO.response.AgravoCountByAgeRange;
 import com.arboviroses.conectaDengue.Api.DTO.response.AgravoCountByEpidemiologicalSemanaEpidemiologicaResponse;
+import com.arboviroses.conectaDengue.Api.DTO.response.BairroCountDTO;
 import com.arboviroses.conectaDengue.Api.DTO.response.CountAgravoBySexoDTO;
 import com.arboviroses.conectaDengue.Api.DTO.response.DataNotificationInfoDTO;
 import com.arboviroses.conectaDengue.Api.DTO.response.DataNotificationInfoNoFilterDTO;
@@ -107,6 +108,11 @@ public class NotificationService {
         return new AgravoCountByAgeRange(NotificationFilters.filtersForNotificationsByAgeRange(request, notificationRepository));
     }
 
+    public List<BairroCountDTO> getBairroCount(HttpServletRequest request) throws InvalidAgravoException 
+    {   
+        return NotificationFilters.filtersForNotificationsCountNeighborhoods(request, notificationRepository);
+    }
+
     /**
      * @test essas são funções feitas para testes, não devem ficar disponiveis em produção
      * @return
@@ -141,7 +147,7 @@ public class NotificationService {
             notificationRepository.countByIdAgravoAndSexo(agravo, "F"),
             notificationRepository.countByIdAgravoAndEvolucao(agravo, "0"),
             notificationRepository.countByIdAgravoAndEvolucao(agravo, "1"),
-            notificationRepository.listarBairrosMaisAfetadosByIdAgravo(agravo)
+            null
         );
     }
 }

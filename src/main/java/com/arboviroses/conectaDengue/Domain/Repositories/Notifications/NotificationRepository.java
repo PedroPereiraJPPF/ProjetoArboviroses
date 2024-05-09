@@ -82,11 +82,20 @@ public interface NotificationRepository extends JpaRepository<Notification, Long
 
     @Query("""
         SELECT new com.arboviroses.conectaDengue.Api.DTO.response.BairroCountDTO(n.nomeBairro, count(n.nomeBairro)) FROM Notification as n
-        where n.idAgravo = :idAgravo
+        where YEAR(n.dataNotification) = :year
         group by n.nomeBairro
         order by count(n.nomeBairro) desc
         """)
-    List<BairroCountDTO> listarBairrosMaisAfetadosByIdAgravo(String idAgravo);
+    List<BairroCountDTO> listarBairrosMaisAfetadosByYear(int year);
+
+    @Query("""
+        SELECT new com.arboviroses.conectaDengue.Api.DTO.response.BairroCountDTO(n.nomeBairro, count(n.nomeBairro)) FROM Notification as n
+        where n.idAgravo = :idAgravo
+        and YEAR(n.dataNotification) = :year
+        group by n.nomeBairro
+        order by count(n.nomeBairro) desc
+        """)
+    List<BairroCountDTO> listarBairrosMaisAfetadosByIdAgravoAndYear(String idAgravo, int year);
 
     @Query("""
         SELECT

@@ -1,5 +1,7 @@
 package com.arboviroses.conectaDengue.Api.Controllers;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -13,6 +15,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.arboviroses.conectaDengue.Api.DTO.response.AgravoCountByAgeRange;
 import com.arboviroses.conectaDengue.Api.DTO.response.AgravoCountByEpidemiologicalSemanaEpidemiologicaResponse;
+import com.arboviroses.conectaDengue.Api.DTO.response.BairroCountDTO;
 import com.arboviroses.conectaDengue.Api.DTO.response.CountAgravoBySexoDTO;
 import com.arboviroses.conectaDengue.Api.DTO.response.DataNotificationInfoDTO;
 import com.arboviroses.conectaDengue.Api.DTO.response.DataNotificationResponseDTO;
@@ -59,6 +62,11 @@ public class NotificationController
     @GetMapping("/notifications/count/ageRange")
     public ResponseEntity<SuccessResponseDTO<AgravoCountByAgeRange>> getByAgeRange(HttpServletRequest request) throws InvalidAgravoException {
         return ResponseEntity.ok().body(SuccessResponseDTO.setResponse(notificationService.getNotificationsCountByAgeRange(request), null));
+    }
+
+    @GetMapping("/notifications/count/neighborhood")
+    public ResponseEntity<SuccessResponseDTO<List<BairroCountDTO>>> getBairro(HttpServletRequest request) throws InvalidAgravoException {
+        return ResponseEntity.ok().body(SuccessResponseDTO.setResponse(notificationService.getBairroCount(request), null));
     }
     
     /**

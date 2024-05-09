@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.arboviroses.conectaDengue.Api.DTO.response.AgravoCountBySemanaEpidemiologica;
+import com.arboviroses.conectaDengue.Api.DTO.response.BairroCountDTO;
 import com.arboviroses.conectaDengue.Api.DTO.response.CountAgravoBySexoDTO;
 import com.arboviroses.conectaDengue.Api.Exceptions.InvalidAgravoException;
 import com.arboviroses.conectaDengue.Domain.Repositories.Notifications.NotificationRepository;
@@ -89,5 +90,25 @@ public class NotificationFilters {
         }
 
         return notificationRepository.listarContagemPorFaixaDeIdade();
+    }
+
+    public static List<BairroCountDTO> filtersForNotificationsCountNeighborhoods(HttpServletRequest request, NotificationRepository notificationRepository) throws InvalidAgravoException {
+        Integer year = request.getParameter("year") != null ? Integer.valueOf(request.getParameter("year")) : null;
+        String agravoName = request.getParameter("agravo");
+        String agravoId = null;
+
+        if (agravoName != null) {
+            agravoId = ConvertNameToIdAgravo.convert(agravoName);
+        }
+
+        if (year != null) {
+            if (agravoId != null) {
+                return notificationRepository.listarBairrosMaisAfetadosByIdAgravoAndYear(agravoId, year);
+            }
+
+            return notificationRepository.listarBairrosMaisAfetadosByYear(year);
+        }
+
+        return notificationRepository.listarBairrosMaisAfetados();
     }
 }
