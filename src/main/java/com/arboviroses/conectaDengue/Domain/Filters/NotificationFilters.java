@@ -111,4 +111,26 @@ public class NotificationFilters {
 
         return notificationRepository.listarBairrosMaisAfetados();
     }
+
+    public static long filterForCountByIdAgravo(HttpServletRequest request, NotificationRepository notificationRepository) throws Exception {
+        Integer year = request.getParameter("year") != null ? Integer.valueOf(request.getParameter("year")) : null;
+        String agravoName = request.getParameter("agravo");
+        String agravoId = null;
+
+        if (agravoName == null) {
+            if (year == null) {
+                return notificationRepository.count();
+            } 
+
+            return notificationRepository.countByYearNotification(year);
+        }
+
+        agravoId = ConvertNameToIdAgravo.convert(agravoName);
+
+        if (year != null) {
+            return notificationRepository.countByIdAgravoAndYearNotification(agravoId, year);
+        }
+
+        return notificationRepository.countByIdAgravo(agravoId);
+    }
 }

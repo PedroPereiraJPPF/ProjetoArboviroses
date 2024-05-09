@@ -113,6 +113,10 @@ public class NotificationService {
         return NotificationFilters.filtersForNotificationsCountNeighborhoods(request, notificationRepository);
     }
 
+    public long countByIdAgravo(HttpServletRequest request) throws Exception {
+        return NotificationFilters.filterForCountByIdAgravo(request, notificationRepository);
+    }
+
     /**
      * @test essas são funções feitas para testes, não devem ficar disponiveis em produção
      * @return

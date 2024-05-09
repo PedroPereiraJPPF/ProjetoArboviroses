@@ -1,7 +1,6 @@
 package com.arboviroses.conectaDengue.Domain.Repositories.Notifications;
 
 import java.sql.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -11,7 +10,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
-import com.arboviroses.conectaDengue.Api.DTO.AgeGroupCountDTO;
 import com.arboviroses.conectaDengue.Api.DTO.response.AgravoCountBySemanaEpidemiologica;
 import com.arboviroses.conectaDengue.Api.DTO.response.BairroCountDTO;
 import com.arboviroses.conectaDengue.Domain.Entities.Notification.Notification;
@@ -21,11 +19,23 @@ public interface NotificationRepository extends JpaRepository<Notification, Long
 {
     Page<Notification> findByIdAgravo(Pageable pageable, String idAgravo);
 
+    long count();
+
     long countBySexo(String sexo);
 
     long countByIdAgravoAndSexo(String idAgravo, String sexo);
 
     long countByIdAgravoAndDataNotification(String idAgravo, Date date);
+
+    @Query("""
+        SELECT count(n.idNotification) FROM Notification as n where n.idAgravo = :agravo and YEAR(n.dataNotification) = :year 
+    """)
+    long countByIdAgravoAndYearNotification(String agravo, long year);
+
+    @Query("""
+        SELECT count(n.idNotification) FROM Notification as n where YEAR(n.dataNotification) = :year 
+    """)
+    long countByYearNotification( long year);
 
     @Query("""
         SELECT count(n.idNotification) FROM Notification as n where n.sexo = :sexo and YEAR(n.dataNotification) = :year 
