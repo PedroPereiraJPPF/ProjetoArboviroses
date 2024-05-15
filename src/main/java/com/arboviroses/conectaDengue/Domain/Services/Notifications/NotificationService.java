@@ -113,6 +113,10 @@ public class NotificationService {
         return NotificationFilters.filtersForNotificationsCountNeighborhoods(request, notificationRepository);
     }
 
+    public long countByEvolucao(HttpServletRequest request) throws Exception {
+        return NotificationFilters.filterForCountByEvolucao(request, notificationRepository);
+    }
+
     public long countByIdAgravo(HttpServletRequest request) throws Exception {
         return NotificationFilters.filterForCountByIdAgravo(request, notificationRepository);
     }

@@ -133,4 +133,34 @@ public class NotificationFilters {
 
         return notificationRepository.countByIdAgravo(agravoId);
     }
+
+    public static long filterForCountByEvolucao(HttpServletRequest request, NotificationRepository notificationRepository) throws Exception {
+        // Integer year = request.getParameter("year") != null ? Integer.valueOf(request.getParameter("year")) : null;
+        // String agravoName = request.getParameter("agravo");
+        // String agravoId = null;
+        // String evolucao;
+
+        // if (request.getParameter("evolucao") == null) {
+        //     throw new Exception("Informe o nivel da evolucao");
+        // }
+
+        // evolucao = request.getParameter("evolucao");
+
+        // if (agravoName == null) {
+        //     if (year == null) {
+        //         return notificationRepository.countByEvolucao(evolucao);
+        //     } 
+
+        //     return notificationRepository.countByEvolucaoAndYear(evolucao, year);
+        // }
+
+        // agravoId = ConvertNameToIdAgravo.convert(agravoName);
+
+        // if (year != null) {
+        //     return notificationRepository.countByIdAgravoAndEvolucaoAndYear(agravoId, evolucao, year);
+        // }
+
+        // return notificationRepository.countByIdAgravoAndEvolucao(agravoId, evolucao);
+        return 2;
+    } 
 }

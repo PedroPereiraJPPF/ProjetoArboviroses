@@ -49,9 +49,19 @@ public interface NotificationRepository extends JpaRepository<Notification, Long
 
     long countByIdAgravo(String idAgravo);
 
+    long countByEvolucao(String evolucao);
+
     long countByIdAgravoAndEvolucao(String idAgravo, String evolucao);
 
-    long countByEvolucao(String evolucao);
+    @Query("""
+        SELECT COUNT(n.idNotification) FROM Notification as n where n.evolucao = :evolucao and YEAR(n.dataNotification) = :year
+        """)
+    long countByEvolucaoAndYear(String evolucao, int year);
+
+    @Query("""
+        SELECT count(n.idNotification) FROM Notification as n where n.idAgravo = :idAgravo and n.evolucao = :evolucao and YEAR(n.dataNotification) = :year
+            """)
+    long countByIdAgravoAndEvolucaoAndYear(String idAgravo, String evolucao, long year);
 
     long countByidAgravoAndNomeBairro(String idAgravo, String nomeBairro);
 

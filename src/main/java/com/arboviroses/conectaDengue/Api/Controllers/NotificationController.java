@@ -73,7 +73,12 @@ public class NotificationController
     public ResponseEntity<SuccessResponseDTO<List<BairroCountDTO>>> getBairro(HttpServletRequest request) throws InvalidAgravoException {
         return ResponseEntity.ok().body(SuccessResponseDTO.setResponse(notificationService.getBairroCount(request), null));
     }
-    
+
+    @GetMapping("/notifications/count/evolucao")
+    public ResponseEntity<SuccessResponseDTO<Long>> getEvolucao(HttpServletRequest request) throws Exception {
+        return ResponseEntity.ok().body(SuccessResponseDTO.setResponse(notificationService.countByEvolucao(request), null));
+    }
+
     /**
      * @comment esse endpoint serve para testes
      * @param request
