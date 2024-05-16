@@ -15,13 +15,21 @@ public class ConvertCSVLineToNotifications {
         Date dataNotification = StringToDateCSV.ConvertStringToDate(line[header.indexOf("DT_NOTIFIC")]);
         int epidemiologicalWeek = calculateEpidemiologicalWeek(dataNotification);
 
+        int idade = 0;
+
+        if (header.indexOf("IDADE") != -1) {
+            idade = Integer.valueOf(line[header.indexOf("IDADE")]);
+        }
+
         return new Notification(
             Long.valueOf(line[header.indexOf("NU_NOTIFIC")]),
             line[header.indexOf("ID_AGRAVO")],
+            idade,
             dataNotification,
             StringToDateCSV.ConvertStringToDate(line[header.indexOf("DT_NASC")]),
             line[header.indexOf("CLASSI_FIN")],
             line[header.indexOf("CS_SEXO")],
+            Integer.valueOf(line[header.indexOf("ID_BAIRRO")]),
             line[header.indexOf("NM_BAIRRO")],
             line[header.indexOf("EVOLUCAO")],
             epidemiologicalWeek

@@ -118,50 +118,50 @@ public interface NotificationRepository extends JpaRepository<Notification, Long
     List<BairroCountDTO> listarBairrosMaisAfetadosByIdAgravoAndYear(String idAgravo, int year);
 
     @Query("""
-        SELECT
-            SUM(CASE WHEN idade BETWEEN 0 AND 10 THEN 1 ELSE 0 END) AS age0to10,
-            SUM(CASE WHEN idade BETWEEN 11 AND 20 THEN 1 ELSE 0 END) AS age11to20,
-            SUM(CASE WHEN idade BETWEEN 21 AND 30 THEN 1 ELSE 0 END) AS age21to30,
-            SUM(CASE WHEN idade BETWEEN 31 AND 40 THEN 1 ELSE 0 END) AS age31to40,
-            SUM(CASE WHEN idade BETWEEN 41 AND 50 THEN 1 ELSE 0 END) AS age41to50,
-            SUM(CASE WHEN idade BETWEEN 51 AND 60 THEN 1 ELSE 0 END) AS age51to60,
-            SUM(CASE WHEN idade > 60 THEN 1 ELSE 0 END) AS ageOver60
-        FROM (
-            SELECT TIMESTAMPDIFF(YEAR, n.dataNascimento, CURDATE()) AS idade
-            FROM Notification as n
-        ) AS tabela_idades
+        SELECT 
+            SUM(CASE WHEN n.idadePaciente BETWEEN 1 AND 10 THEN 1 ELSE 0 END) AS age1to10,
+            SUM(CASE WHEN n.idadePaciente BETWEEN 11 AND 20 THEN 1 ELSE 0 END) AS age11to20,
+            SUM(CASE WHEN n.idadePaciente BETWEEN 21 AND 30 THEN 1 ELSE 0 END) AS age21to30,
+            SUM(CASE WHEN n.idadePaciente BETWEEN 31 AND 40 THEN 1 ELSE 0 END) AS age31to40,
+            SUM(CASE WHEN n.idadePaciente BETWEEN 41 AND 50 THEN 1 ELSE 0 END) AS age41to50,
+            SUM(CASE WHEN n.idadePaciente BETWEEN 51 AND 60 THEN 1 ELSE 0 END) AS age51to60,
+            SUM(CASE WHEN n.idadePaciente BETWEEN 61 AND 70 THEN 1 ELSE 0 END) AS age61to70,
+            SUM(CASE WHEN n.idadePaciente BETWEEN 71 AND 80 THEN 1 ELSE 0 END) AS age71to80,
+            SUM(CASE WHEN n.idadePaciente BETWEEN 81 AND 90 THEN 1 ELSE 0 END) AS age81to90,
+            SUM(CASE WHEN n.idadePaciente BETWEEN 91 AND 99 THEN 1 ELSE 0 END) AS age91to99
+        FROM Notification as n
     """)
     Map<String, Integer> listarContagemPorFaixaDeIdade();
 
     @Query("""
-        SELECT
-            SUM(CASE WHEN idade BETWEEN 0 AND 10 THEN 1 ELSE 0 END) AS age0to10,
-            SUM(CASE WHEN idade BETWEEN 11 AND 20 THEN 1 ELSE 0 END) AS age11to20,
-            SUM(CASE WHEN idade BETWEEN 21 AND 30 THEN 1 ELSE 0 END) AS age21to30,
-            SUM(CASE WHEN idade BETWEEN 31 AND 40 THEN 1 ELSE 0 END) AS age31to40,
-            SUM(CASE WHEN idade BETWEEN 41 AND 50 THEN 1 ELSE 0 END) AS age41to50,
-            SUM(CASE WHEN idade BETWEEN 51 AND 60 THEN 1 ELSE 0 END) AS age51to60,
-            SUM(CASE WHEN idade > 60 THEN 1 ELSE 0 END) AS ageOver60
-        FROM (
-            SELECT TIMESTAMPDIFF(YEAR, n.dataNascimento, CURDATE()) AS idade
-            FROM Notification as n where YEAR(n.dataNotification) = :year
-        ) AS tabela_idades
+        SELECT 
+            SUM(CASE WHEN n.idadePaciente BETWEEN 1 AND 10 THEN 1 ELSE 0 END) AS age1to10,
+            SUM(CASE WHEN n.idadePaciente BETWEEN 11 AND 20 THEN 1 ELSE 0 END) AS age11to20,
+            SUM(CASE WHEN n.idadePaciente BETWEEN 21 AND 30 THEN 1 ELSE 0 END) AS age21to30,
+            SUM(CASE WHEN n.idadePaciente BETWEEN 31 AND 40 THEN 1 ELSE 0 END) AS age31to40,
+            SUM(CASE WHEN n.idadePaciente BETWEEN 41 AND 50 THEN 1 ELSE 0 END) AS age41to50,
+            SUM(CASE WHEN n.idadePaciente BETWEEN 51 AND 60 THEN 1 ELSE 0 END) AS age51to60,
+            SUM(CASE WHEN n.idadePaciente BETWEEN 61 AND 70 THEN 1 ELSE 0 END) AS age61to70,
+            SUM(CASE WHEN n.idadePaciente BETWEEN 71 AND 80 THEN 1 ELSE 0 END) AS age71to80,
+            SUM(CASE WHEN n.idadePaciente BETWEEN 81 AND 90 THEN 1 ELSE 0 END) AS age81to90,
+            SUM(CASE WHEN n.idadePaciente BETWEEN 91 AND 99 THEN 1 ELSE 0 END) AS age91to99
+        FROM Notification as n where YEAR(n.dataNotification) = :year
     """)
     Map<String, Integer> listarContagemPorFaixaDeIdade(int year);
 
     @Query("""
-        SELECT
-            SUM(CASE WHEN idade BETWEEN 0 AND 10 THEN 1 ELSE 0 END) AS age0to10,
-            SUM(CASE WHEN idade BETWEEN 11 AND 20 THEN 1 ELSE 0 END) AS age11to20,
-            SUM(CASE WHEN idade BETWEEN 21 AND 30 THEN 1 ELSE 0 END) AS age21to30,
-            SUM(CASE WHEN idade BETWEEN 31 AND 40 THEN 1 ELSE 0 END) AS age31to40,
-            SUM(CASE WHEN idade BETWEEN 41 AND 50 THEN 1 ELSE 0 END) AS age41to50,
-            SUM(CASE WHEN idade BETWEEN 51 AND 60 THEN 1 ELSE 0 END) AS age51to60,
-            SUM(CASE WHEN idade > 60 THEN 1 ELSE 0 END) AS ageOver60
-        FROM (
-            SELECT TIMESTAMPDIFF(YEAR, n.dataNascimento, CURDATE()) AS idade
-            FROM Notification as n where YEAR(n.dataNotification) = :year and n.idAgravo = :idAgravo
-        ) AS tabela_idades
+        SELECT 
+            SUM(CASE WHEN n.idadePaciente BETWEEN 1 AND 10 THEN 1 ELSE 0 END) AS age1to10,
+            SUM(CASE WHEN n.idadePaciente BETWEEN 11 AND 20 THEN 1 ELSE 0 END) AS age11to20,
+            SUM(CASE WHEN n.idadePaciente BETWEEN 21 AND 30 THEN 1 ELSE 0 END) AS age21to30,
+            SUM(CASE WHEN n.idadePaciente BETWEEN 31 AND 40 THEN 1 ELSE 0 END) AS age31to40,
+            SUM(CASE WHEN n.idadePaciente BETWEEN 41 AND 50 THEN 1 ELSE 0 END) AS age41to50,
+            SUM(CASE WHEN n.idadePaciente BETWEEN 51 AND 60 THEN 1 ELSE 0 END) AS age51to60,
+            SUM(CASE WHEN n.idadePaciente BETWEEN 61 AND 70 THEN 1 ELSE 0 END) AS age61to70,
+            SUM(CASE WHEN n.idadePaciente BETWEEN 71 AND 80 THEN 1 ELSE 0 END) AS age71to80,
+            SUM(CASE WHEN n.idadePaciente BETWEEN 81 AND 90 THEN 1 ELSE 0 END) AS age81to90,
+            SUM(CASE WHEN n.idadePaciente BETWEEN 91 AND 99 THEN 1 ELSE 0 END) AS age91to99
+        FROM Notification as n where YEAR(n.dataNotification) = :year and idAgravo = :idAgravo
     """)
     Map<String, Integer> listarContagemPorFaixaDeIdadeByIdAgravo(String idAgravo, int year);
 }

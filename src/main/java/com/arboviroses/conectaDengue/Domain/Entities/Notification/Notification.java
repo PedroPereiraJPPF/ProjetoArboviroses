@@ -22,10 +22,12 @@ public class Notification {
     @Id
     private long idNotification;
     private String idAgravo;
+    private int idadePaciente;
     private Date dataNotification;
     private Date dataNascimento;
     private String classificacao;
     private String sexo;
+    private int idBairro;
     private String nomeBairro;
     private String evolucao;  
     private int semanaEpidemiologica;
