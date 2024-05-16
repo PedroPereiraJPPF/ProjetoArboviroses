@@ -135,32 +135,51 @@ public class NotificationFilters {
     }
 
     public static long filterForCountByEvolucao(HttpServletRequest request, NotificationRepository notificationRepository) throws Exception {
-        // Integer year = request.getParameter("year") != null ? Integer.valueOf(request.getParameter("year")) : null;
-        // String agravoName = request.getParameter("agravo");
-        // String agravoId = null;
-        // String evolucao;
+        Integer year = request.getParameter("year") != null ? Integer.valueOf(request.getParameter("year")) : null;
+        String agravoName = request.getParameter("agravo");
+        String agravoId = null;
+        String evolucao;
 
-        // if (request.getParameter("evolucao") == null) {
-        //     throw new Exception("Informe o nivel da evolucao");
-        // }
+        if (request.getParameter("evolucao") == null) {
+            throw new Exception("Informe o nivel da evolucao");
+        }
 
-        // evolucao = request.getParameter("evolucao");
+        evolucao = request.getParameter("evolucao");
 
-        // if (agravoName == null) {
-        //     if (year == null) {
-        //         return notificationRepository.countByEvolucao(evolucao);
-        //     } 
+        if (agravoName == null) {
+            if (year == null) {
+                return notificationRepository.countByEvolucao(evolucao);
+            } 
 
-        //     return notificationRepository.countByEvolucaoAndYear(evolucao, year);
-        // }
+            return notificationRepository.countByEvolucaoAndYear(evolucao, year);
+        }
 
-        // agravoId = ConvertNameToIdAgravo.convert(agravoName);
+        agravoId = ConvertNameToIdAgravo.convert(agravoName);
 
-        // if (year != null) {
-        //     return notificationRepository.countByIdAgravoAndEvolucaoAndYear(agravoId, evolucao, year);
-        // }
+        if (year != null) {
+            return notificationRepository.countByIdAgravoAndEvolucaoAndYear(agravoId, evolucao, year);
+        }
 
-        // return notificationRepository.countByIdAgravoAndEvolucao(agravoId, evolucao);
-        return 2;
+        return notificationRepository.countByIdAgravoAndEvolucao(agravoId, evolucao);
+    } 
+
+    public static Map<String, Integer> filterForListByDadosEspecificados(HttpServletRequest request, NotificationRepository notificationRepository) throws Exception {
+        Integer year = request.getParameter("year") != null ? Integer.valueOf(request.getParameter("year")) : null;
+        String agravoName = request.getParameter("agravo");
+        String agravoId = null;
+
+        if (agravoName == null) {
+            if (year == null) {
+                return notificationRepository.listarDadosEspecificadosDasNotificacoes();
+            } 
+        }
+
+        agravoId = ConvertNameToIdAgravo.convert(agravoName);
+
+        if (year != null) {
+            return notificationRepository.listarDadosEspecificadosDasNotificacoes(agravoId, year);
+        }
+
+        return notificationRepository.listarDadosEspecificadosDasNotificacoes(agravoId);
     } 
 }

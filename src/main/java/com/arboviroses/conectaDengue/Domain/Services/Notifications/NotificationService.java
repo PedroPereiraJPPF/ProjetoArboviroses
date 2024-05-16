@@ -6,6 +6,7 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 import com.arboviroses.conectaDengue.Utils.ConvertNameToIdAgravo;
 import com.arboviroses.conectaDengue.Utils.MossoroData.NeighborhoodsMossoro;
@@ -157,5 +158,9 @@ public class NotificationService {
             notificationRepository.countByIdAgravoAndEvolucao(agravo, "1"),
             null
         );
+    }
+
+    public Map<String, Integer> listEspecificNotificationData(HttpServletRequest request) throws Exception {
+        return NotificationFilters.filterForListByDadosEspecificados(request, notificationRepository);
     }
 }

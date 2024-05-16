@@ -1,6 +1,7 @@
 package com.arboviroses.conectaDengue.Api.Controllers;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -77,6 +78,11 @@ public class NotificationController
     @GetMapping("/notifications/count/evolucao")
     public ResponseEntity<SuccessResponseDTO<Long>> getEvolucao(HttpServletRequest request) throws Exception {
         return ResponseEntity.ok().body(SuccessResponseDTO.setResponse(notificationService.countByEvolucao(request), null));
+    }
+
+    @GetMapping("/notifications/count/informacoes")
+    public ResponseEntity<SuccessResponseDTO<Map<String, Integer>>> getInformacoes(HttpServletRequest request) throws Exception {
+        return ResponseEntity.ok().body(SuccessResponseDTO.setResponse(notificationService.listEspecificNotificationData(request), null));
     }
 
     /**

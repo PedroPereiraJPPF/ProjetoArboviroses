@@ -164,4 +164,40 @@ public interface NotificationRepository extends JpaRepository<Notification, Long
         FROM Notification as n where YEAR(n.dataNotification) = :year and idAgravo = :idAgravo
     """)
     Map<String, Integer> listarContagemPorFaixaDeIdadeByIdAgravo(String idAgravo, int year);
+
+    @Query("""
+        SELECT 
+            sum(case when n.classificacao = '1' then 1 else 0 end) AS confirmados,
+            sum(case when n.classificacao = '2' then 1 else 0 end) AS descartados,
+            sum(case when n.evolucao = '1' then 1 else 0 end) AS curados,
+            sum(case when n.evolucao = '2' then 1 else 0 end) AS morte_por_agravo,
+            sum(case when n.evolucao = '3' then 1 else 0 end) AS morte_outras_causas,
+            sum(case when n.evolucao = '4' then 1 else 0 end) AS ignorados
+        FROM Notification AS n
+    """)
+    Map<String, Integer> listarDadosEspecificadosDasNotificacoes();
+
+    @Query("""
+        SELECT 
+            sum(case when n.classificacao = '1' then 1 else 0 end) AS confirmados,
+            sum(case when n.classificacao = '2' then 1 else 0 end) AS descartados,
+            sum(case when n.evolucao = '1' then 1 else 0 end) AS curados,
+            sum(case when n.evolucao = '2' then 1 else 0 end) AS morte_por_agravo,
+            sum(case when n.evolucao = '3' then 1 else 0 end) AS morte_outras_causas,
+            sum(case when n.evolucao = '4' then 1 else 0 end) AS ignorados
+        FROM Notification AS n where n.idAgravo = :idAgravo
+    """)
+    Map<String, Integer> listarDadosEspecificadosDasNotificacoes(String idAgravo);
+
+    @Query("""
+        SELECT 
+            sum(case when n.classificacao = '1' then 1 else 0 end) AS confirmados,
+            sum(case when n.classificacao = '2' then 1 else 0 end) AS descartados,
+            sum(case when n.evolucao = '1' then 1 else 0 end) AS curados,
+            sum(case when n.evolucao = '2' then 1 else 0 end) AS morte_por_agravo,
+            sum(case when n.evolucao = '3' then 1 else 0 end) AS morte_outras_causas,
+            sum(case when n.evolucao = '4' then 1 else 0 end) AS ignorados
+        FROM Notification AS n where n.idAgravo = :idAgravo and YEAR(n.dataNotification) = :year
+    """)
+    Map<String, Integer> listarDadosEspecificadosDasNotificacoes(String idAgravo, int year);
 }
