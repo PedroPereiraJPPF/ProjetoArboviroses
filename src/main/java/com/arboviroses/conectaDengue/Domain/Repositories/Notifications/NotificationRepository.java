@@ -94,14 +94,30 @@ public interface NotificationRepository extends JpaRepository<Notification, Long
     List<AgravoCountBySemanaEpidemiologica> listarContagemPorSemanaEpidemiologica(String agravo, int year);
 
     @Query("""
-        SELECT new com.arboviroses.conectaDengue.Api.DTO.response.BairroCountDTO(n.nomeBairro, count(n.nomeBairro)) FROM Notification as n
+        SELECT new com.arboviroses.conectaDengue.Api.DTO.response.BairroCountDTO(
+            n.nomeBairro,
+            count(n.nomeBairro),
+            SUM(CASE WHEN n.classificacao = '1' THEN 1 ELSE 0 END),
+            SUM(CASE WHEN n.classificacao = '2' THEN 1 ELSE 0 END),
+            SUM(CASE WHEN n.evolucao = '1' THEN 1 ELSE 0 END),
+            SUM(CASE WHEN n.evolucao = '2' THEN 1 ELSE 0 END),
+            SUM(CASE WHEN n.evolucao = '4' THEN 1 ELSE 0 END)
+            ) FROM Notification as n
         group by n.nomeBairro
         order by count(n.nomeBairro) desc
         """)
     List<BairroCountDTO> listarBairrosMaisAfetados();
 
     @Query("""
-        SELECT new com.arboviroses.conectaDengue.Api.DTO.response.BairroCountDTO(n.nomeBairro, count(n.nomeBairro)) FROM Notification as n
+        SELECT new com.arboviroses.conectaDengue.Api.DTO.response.BairroCountDTO(
+            n.nomeBairro,
+            count(n.nomeBairro),
+            SUM(CASE WHEN n.classificacao = '1' THEN 1 ELSE 0 END),
+            SUM(CASE WHEN n.classificacao = '2' THEN 1 ELSE 0 END),
+            SUM(CASE WHEN n.evolucao = '1' THEN 1 ELSE 0 END),
+            SUM(CASE WHEN n.evolucao = '2' THEN 1 ELSE 0 END),
+            SUM(CASE WHEN n.evolucao = '4' THEN 1 ELSE 0 END)
+            ) FROM Notification as n
         where YEAR(n.dataNotification) = :year
         group by n.nomeBairro
         order by count(n.nomeBairro) desc
@@ -109,7 +125,15 @@ public interface NotificationRepository extends JpaRepository<Notification, Long
     List<BairroCountDTO> listarBairrosMaisAfetadosByYear(int year);
 
     @Query("""
-        SELECT new com.arboviroses.conectaDengue.Api.DTO.response.BairroCountDTO(n.nomeBairro, count(n.nomeBairro)) FROM Notification as n
+        SELECT new com.arboviroses.conectaDengue.Api.DTO.response.BairroCountDTO(
+            n.nomeBairro, 
+            count(n.nomeBairro), 
+            SUM(CASE WHEN n.classificacao = '1' THEN 1 ELSE 0 END),
+            SUM(CASE WHEN n.classificacao = '2' THEN 1 ELSE 0 END),
+            SUM(CASE WHEN n.evolucao = '1' THEN 1 ELSE 0 END),
+            SUM(CASE WHEN n.evolucao = '2' THEN 1 ELSE 0 END),
+            SUM(CASE WHEN n.evolucao = '4' THEN 1 ELSE 0 END)
+        ) FROM Notification as n
         where n.idAgravo = :idAgravo
         and YEAR(n.dataNotification) = :year
         group by n.nomeBairro

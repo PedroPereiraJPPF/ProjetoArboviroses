@@ -11,4 +11,9 @@ public class BairroCountDTO
 {
     private String nomeBairro;
     private long casosReportados;
+    private long confirmados;
+    private long descartados;
+    private long curados;
+    private long mortePorAgravo;
+    private long igorados;
 }
