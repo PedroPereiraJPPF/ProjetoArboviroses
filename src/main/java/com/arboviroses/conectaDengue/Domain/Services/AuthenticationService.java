@@ -1,0 +1,51 @@
+package com.arboviroses.conectaDengue.Domain.Services;
+
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+
+import com.arboviroses.conectaDengue.Api.DTO.request.LoginUserDTO;
+import com.arboviroses.conectaDengue.Api.DTO.request.RegisterUserDTO;
+import com.arboviroses.conectaDengue.Domain.Entities.Notification.User;
+import com.arboviroses.conectaDengue.Domain.Repositories.Users.UserRepository;
+
+@Service
+public class AuthenticationService {
+    private final UserRepository userRepository;
+    
+    private final PasswordEncoder passwordEncoder;
+    
+    private final AuthenticationManager authenticationManager;
+
+    public AuthenticationService(
+        UserRepository userRepository,
+        AuthenticationManager authenticationManager,
+        PasswordEncoder passwordEncoder
+    ) {
+        this.authenticationManager = authenticationManager;
+        this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
+    }
+
+    public User signup(RegisterUserDTO input) {
+        User user = new User()
+                .setFullName(input.getFullName())
+                .setCpf(input.getCpf())
+                .setPassword(passwordEncoder.encode(input.getPassword()));
+
+        return userRepository.save(user);
+    }
+
+    public User authenticate(LoginUserDTO input) {
+        authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(
+                        input.getCpf(),
+                        input.getPassword()
+                )
+        );
+
+        return userRepository.findByCpf(input.getCpf())
+                .orElseThrow();
+    }
+}
