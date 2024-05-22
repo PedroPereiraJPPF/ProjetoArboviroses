@@ -32,10 +32,10 @@ public class SecurityConfiguration {
         http.csrf(csrf -> csrf
                 .disable())
                 .authorizeHttpRequests(requests -> requests
-                        .requestMatchers("api/auth/**")
-                        .permitAll()
+                        .requestMatchers("api/auth/register").authenticated()
+                        .requestMatchers("api/savecsvdata").authenticated()
                         .anyRequest()
-                        .authenticated())
+                        .permitAll())
                 .sessionManagement(management -> management
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authenticationProvider(authenticationProvider)

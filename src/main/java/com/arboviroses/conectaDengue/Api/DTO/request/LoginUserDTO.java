@@ -9,4 +9,11 @@ public class LoginUserDTO {
     private String cpf;
     
     private String password;
+
+    public LoginUserDTO setCpf(String cpf)
+    {
+        this.cpf = cpf.replaceAll("\\D", "");
+
+        return this;
+    }
 }

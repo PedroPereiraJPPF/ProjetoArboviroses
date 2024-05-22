@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.AccountStatusException;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
@@ -109,5 +110,12 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     {
         ApiExceptionResponse exceptionResponse = new ApiExceptionResponse(HttpStatus.BAD_REQUEST, "Você não pode acessar esse recurso");
         return new ResponseEntity<>(exceptionResponse, new HttpHeaders(), 500);
+    }
+
+    @ExceptionHandler(BadCredentialsException.class)
+    public ResponseEntity<Object> HandleExceptions(BadCredentialsException exception, WebRequest request)
+    {
+        ApiExceptionResponse exceptionResponse = new ApiExceptionResponse(HttpStatus.BAD_REQUEST, "Você não pode acessar esse recurso");
+        return new ResponseEntity<>(exceptionResponse, new HttpHeaders(), 401);
     }
 }
