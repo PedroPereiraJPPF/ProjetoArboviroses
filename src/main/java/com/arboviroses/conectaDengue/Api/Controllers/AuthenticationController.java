@@ -48,7 +48,7 @@ public class AuthenticationController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<JwtResponse> authenticate(@RequestBody LoginUserDTO loginUserDto) throws UsernameNotFoundException {        
+    public ResponseEntity<JwtResponse> authenticate(@RequestBody LoginUserDTO loginUserDto) throws UsernameNotFoundException {    
         Authentication authentication = authenticationService.authenticate(loginUserDto);
 
         if (!authentication.isAuthenticated()) {
@@ -56,6 +56,8 @@ public class AuthenticationController {
         }
 
         User authenticatedUser = userRepository.findByCpf(loginUserDto.getCpf()).get();
+
+        refreshTokenService.deleteByUserId(authenticatedUser.getId());
 
         RefreshToken refreshToken = refreshTokenService.createRefreshToken(loginUserDto.getCpf());
 

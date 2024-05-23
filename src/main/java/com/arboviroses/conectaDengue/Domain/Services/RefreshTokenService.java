@@ -38,6 +38,16 @@ public class RefreshTokenService {
         return refreshTokenRepository.findByToken(token);
     }
 
+    public Optional<RefreshToken> findByUserId(long userId) 
+    {
+        return refreshTokenRepository.findByUserId(userId);
+    }
+
+    public void deleteByUserId(long userId)
+    {
+        refreshTokenRepository.deleteByUserId(userId);
+    }
+
     public RefreshToken verifyExpiration(RefreshToken token){
         if(token.getExpiryDate().compareTo(Instant.now())<0){
             refreshTokenRepository.delete(token);
