@@ -16,4 +16,5 @@ server.error.include-stacktrace=never
 
 #JWT config
 security.jwt.secret-key=SHA256Token
-security.jwt.expiration-time=14400000
+security.jwt.expiration-time=620000
+security.jwt.refreshToken.expiration-time=1200000

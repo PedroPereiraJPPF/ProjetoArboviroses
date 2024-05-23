@@ -1,6 +1,9 @@
 package com.arboviroses.conectaDengue.Api.Controllers;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -8,16 +11,26 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.arboviroses.conectaDengue.Api.DTO.request.LoginUserDTO;
+import com.arboviroses.conectaDengue.Api.DTO.request.RefreshTokenRequestDTO;
 import com.arboviroses.conectaDengue.Api.DTO.request.RegisterUserDTO;
-import com.arboviroses.conectaDengue.Api.DTO.response.LoginResponse;
-import com.arboviroses.conectaDengue.Domain.Entities.Notification.User;
+import com.arboviroses.conectaDengue.Api.DTO.response.JwtResponse;
+import com.arboviroses.conectaDengue.Domain.Entities.RefreshToken;
+import com.arboviroses.conectaDengue.Domain.Entities.User;
+import com.arboviroses.conectaDengue.Domain.Repositories.Users.UserRepository;
 import com.arboviroses.conectaDengue.Domain.Services.AuthenticationService;
 import com.arboviroses.conectaDengue.Domain.Services.JwtService;
+import com.arboviroses.conectaDengue.Domain.Services.RefreshTokenService;
 
 @RequestMapping("api/auth")
 @RestController
 @CrossOrigin(origins = "http://localhost:5173")
 public class AuthenticationController {
+    @Autowired
+    private UserRepository userRepository;
+
+    @Autowired 
+    private RefreshTokenService refreshTokenService;
+
     private final JwtService jwtService;
     
     private final AuthenticationService authenticationService;
@@ -35,13 +48,37 @@ public class AuthenticationController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<LoginResponse> authenticate(@RequestBody LoginUserDTO loginUserDto) {        
-        User authenticatedUser = authenticationService.authenticate(loginUserDto);
+    public ResponseEntity<JwtResponse> authenticate(@RequestBody LoginUserDTO loginUserDto) throws UsernameNotFoundException {        
+        Authentication authentication = authenticationService.authenticate(loginUserDto);
+
+        if (!authentication.isAuthenticated()) {
+            throw new UsernameNotFoundException("User not authenticated");
+        }
+
+        User authenticatedUser = userRepository.findByCpf(loginUserDto.getCpf()).get();
+
+        RefreshToken refreshToken = refreshTokenService.createRefreshToken(loginUserDto.getCpf());
 
         String jwtToken = jwtService.generateToken(authenticatedUser);
 
-        LoginResponse loginResponse = new LoginResponse(jwtToken, jwtService.getExpirationTime(), authenticatedUser.getFullName());
+        JwtResponse loginResponse = new JwtResponse(jwtToken, refreshToken.getToken(), authenticatedUser.getFullName());
 
         return ResponseEntity.ok(loginResponse);
+    }
+
+    @PostMapping("/refreshToken")
+    public ResponseEntity<JwtResponse> refreshToken(@RequestBody RefreshTokenRequestDTO refreshTokenRequest) throws UsernameNotFoundException {        
+        JwtResponse response = refreshTokenService.findByToken(refreshTokenRequest.getToken())
+                    .map(refreshTokenService::verifyExpiration)
+                    .map(RefreshToken::getUser)
+                    .map(user -> {
+                    String accessToken = jwtService.generateToken(user);
+
+                    return JwtResponse.builder()
+                                        .jwtToken(accessToken)
+                                        .token(refreshTokenRequest.getToken()).build();
+                    }).orElseThrow(() ->new RuntimeException("Refresh Token não é válido!"));
+
+        return ResponseEntity.ok(response);
     }
 }

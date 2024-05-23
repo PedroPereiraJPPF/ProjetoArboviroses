@@ -2,12 +2,13 @@ package com.arboviroses.conectaDengue.Domain.Services;
 
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.arboviroses.conectaDengue.Api.DTO.request.LoginUserDTO;
 import com.arboviroses.conectaDengue.Api.DTO.request.RegisterUserDTO;
-import com.arboviroses.conectaDengue.Domain.Entities.Notification.User;
+import com.arboviroses.conectaDengue.Domain.Entities.User;
 import com.arboviroses.conectaDengue.Domain.Repositories.Users.UserRepository;
 
 @Service
@@ -37,15 +38,14 @@ public class AuthenticationService {
         return userRepository.save(user);
     }
 
-    public User authenticate(LoginUserDTO input) {
-        authenticationManager.authenticate(
+    public Authentication authenticate(LoginUserDTO input) {
+        Authentication auth = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         input.getCpf(),
                         input.getPassword()
                 )
         );
 
-        return userRepository.findByCpf(input.getCpf())
-                .orElseThrow();
+        return auth;
     }
 }
