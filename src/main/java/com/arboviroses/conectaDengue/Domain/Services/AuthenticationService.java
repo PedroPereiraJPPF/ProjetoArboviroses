@@ -8,6 +8,8 @@ import org.springframework.stereotype.Service;
 
 import com.arboviroses.conectaDengue.Api.DTO.request.LoginUserDTO;
 import com.arboviroses.conectaDengue.Api.DTO.request.RegisterUserDTO;
+import com.arboviroses.conectaDengue.Api.Exceptions.PasswordNotMatchException;
+import com.arboviroses.conectaDengue.Api.Exceptions.UserAlredyExistsException;
 import com.arboviroses.conectaDengue.Domain.Entities.User;
 import com.arboviroses.conectaDengue.Domain.Repositories.Users.UserRepository;
 
@@ -29,7 +31,17 @@ public class AuthenticationService {
         this.passwordEncoder = passwordEncoder;
     }
 
-    public User signup(RegisterUserDTO input) {
+    public User signup(RegisterUserDTO input) throws PasswordNotMatchException, UserAlredyExistsException {           
+        if (!(input.getPassword().equals(input.getConfirmPassword()))) {
+            throw new PasswordNotMatchException("Senhas não conferem");
+        }
+
+        User userExists = userRepository.findByCpf(input.getCpf()).orElse(null);
+
+        if (userExists != null) {
+            throw new UserAlredyExistsException("Usuario já cadastrado");
+        }
+
         User user = new User()
                 .setFullName(input.getFullName())
                 .setCpf(input.getCpf())

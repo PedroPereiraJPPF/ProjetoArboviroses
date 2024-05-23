@@ -14,12 +14,16 @@ import com.arboviroses.conectaDengue.Api.DTO.request.LoginUserDTO;
 import com.arboviroses.conectaDengue.Api.DTO.request.RefreshTokenRequestDTO;
 import com.arboviroses.conectaDengue.Api.DTO.request.RegisterUserDTO;
 import com.arboviroses.conectaDengue.Api.DTO.response.JwtResponse;
+import com.arboviroses.conectaDengue.Api.Exceptions.PasswordNotMatchException;
+import com.arboviroses.conectaDengue.Api.Exceptions.UserAlredyExistsException;
 import com.arboviroses.conectaDengue.Domain.Entities.RefreshToken;
 import com.arboviroses.conectaDengue.Domain.Entities.User;
 import com.arboviroses.conectaDengue.Domain.Repositories.Users.UserRepository;
 import com.arboviroses.conectaDengue.Domain.Services.AuthenticationService;
 import com.arboviroses.conectaDengue.Domain.Services.JwtService;
 import com.arboviroses.conectaDengue.Domain.Services.RefreshTokenService;
+
+import jakarta.validation.Valid;
 
 @RequestMapping("api/auth")
 @RestController
@@ -41,7 +45,7 @@ public class AuthenticationController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<User> register(@RequestBody RegisterUserDTO registerUserDto) {
+    public ResponseEntity<User> register(@Valid @RequestBody RegisterUserDTO registerUserDto) throws PasswordNotMatchException, UserAlredyExistsException {
         User registeredUser = authenticationService.signup(registerUserDto);
 
         return ResponseEntity.ok(registeredUser);
