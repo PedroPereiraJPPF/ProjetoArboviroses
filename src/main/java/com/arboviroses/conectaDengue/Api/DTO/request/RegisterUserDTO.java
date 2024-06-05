@@ -17,7 +17,6 @@ public class RegisterUserDTO {
     private String password;
 
     @NotEmpty(message = "Confirmação de senha não pode ser vazia")
-    @Size(min = 6, message = "Confirmação de senha deve ter pelo menos 6 caracteres")
     private String confirmPassword;
 
     @NotEmpty(message = "Nome completo não pode ser vazio")
