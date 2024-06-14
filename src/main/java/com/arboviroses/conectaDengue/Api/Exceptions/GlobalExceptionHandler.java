@@ -64,13 +64,6 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(exceptionResponse, new HttpHeaders(), exceptionResponse.getHttpStatus());
     }
 
-    @ExceptionHandler(InvalidDateStringException.class)
-    public ResponseEntity<Object> HandleExceptions(InvalidDateStringException exception, WebRequest request)
-    {
-        ApiExceptionResponse exceptionResponse = new ApiExceptionResponse(HttpStatus.BAD_REQUEST, exception.getMessage());
-        return new ResponseEntity<>(exceptionResponse, new HttpHeaders(), exceptionResponse.getHttpStatus());
-    }
-
     @ExceptionHandler(SQLIntegrityConstraintViolationException.class)
     public ResponseEntity<Object> HandleExceptions(SQLIntegrityConstraintViolationException exception, WebRequest request)
     {

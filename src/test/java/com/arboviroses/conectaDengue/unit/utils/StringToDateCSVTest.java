@@ -5,13 +5,11 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-
-import com.arboviroses.conectaDengue.Api.Exceptions.InvalidDateStringException;
 import com.arboviroses.conectaDengue.Utils.StringToDateCSV;
 
 public class StringToDateCSVTest {
     @Test
-    public void test_if_convert_string_to_date_returns_correct_date() throws InvalidDateStringException, ParseException
+    public void test_if_convert_string_to_date_returns_correct_date() throws ParseException
     {   
         String dateStringExpected1 = "28/06/2017";
         String dateStringExpected2 = "01/06/2017";
@@ -30,26 +28,5 @@ public class StringToDateCSVTest {
         Assertions.assertEquals(dateExpected2, formatedDate3);
         Assertions.assertEquals(dateExpected2, formatedDate4);
         Assertions.assertEquals(dateExpected2, formatedDate5);
-    }
-
-    @Test
-    public void test_if_convert_string_to_date_throws_invalidDateStringException()
-    {
-        String caseOne = Assertions.assertThrows(InvalidDateStringException.class, () -> {
-            StringToDateCSV.ConvertStringToDate("000/000/0000");
-        }).getMessage();
-
-        String caseTwo = Assertions.assertThrows(InvalidDateStringException.class, () -> {
-            StringToDateCSV.ConvertStringToDate("");
-        }).getMessage();
-
-        String caseThree = Assertions.assertThrows(InvalidDateStringException.class, () -> {
-            StringToDateCSV.ConvertStringToDate(null);
-        }).getMessage();
-
-
-        Assertions.assertEquals(caseOne, "Invalid date format: 000/000/0000");
-        Assertions.assertEquals(caseTwo, "Invalid date format: ");
-        Assertions.assertEquals(caseThree, "Date String cannot be null");
     }
 }

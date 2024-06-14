@@ -2,8 +2,6 @@ package com.arboviroses.conectaDengue.unit.utils;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
-
-import com.arboviroses.conectaDengue.Api.Exceptions.InvalidDateStringException;
 import com.arboviroses.conectaDengue.Domain.Entities.Notification.Notification;
 
 import java.util.List;
@@ -14,13 +12,11 @@ import static com.arboviroses.conectaDengue.Utils.ConvertCSVLineToNotifications.
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class ConvertCSVLineToNotificationsTest {
-
-
     @Test
-    public void test_if_method_convert_returns_an_notification_object() throws NumberFormatException, InvalidDateStringException, ParseException
+    public void test_if_method_convert_returns_an_notification_object() throws NumberFormatException, ParseException
     {
         // arrage
-        String[] line = {"500", "A90", "10/10/2006", "10/10/2006", "100", "M", "ABOLICAO", "1"};
+        String[] line = {"500", "A90", "10/10/2006", "10/10/2006", "100", "M", "ABOLICAO", "1", "27", "42"};
         List<String> header = Arrays.asList(
             "NU_NOTIFIC",
             "ID_AGRAVO",
@@ -29,7 +25,9 @@ public class ConvertCSVLineToNotificationsTest {
             "CLASSI_FIN",
             "CS_SEXO",
             "NM_BAIRRO",
-            "EVOLUCAO"
+            "EVOLUCAO",
+            "IDADE", 
+            "ID_BAIRRO"
         );
 
         // act

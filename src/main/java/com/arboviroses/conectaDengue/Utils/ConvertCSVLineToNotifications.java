@@ -6,11 +6,10 @@ import java.time.ZoneId;
 import java.util.Date;
 import java.util.List;
 
-import com.arboviroses.conectaDengue.Api.Exceptions.InvalidDateStringException;
 import com.arboviroses.conectaDengue.Domain.Entities.Notification.Notification;
 
 public class ConvertCSVLineToNotifications {
-    public static Notification convertCsvLineToNotificationObject(String[] line, List<String> header) throws NumberFormatException, InvalidDateStringException, ParseException
+    public static Notification convertCsvLineToNotificationObject(String[] line, List<String> header) throws NumberFormatException, ParseException
     {   
         Date dataNotification = StringToDateCSV.ConvertStringToDate(line[header.indexOf("DT_NOTIFIC")]);
         int epidemiologicalWeek = calculateEpidemiologicalWeek(dataNotification);

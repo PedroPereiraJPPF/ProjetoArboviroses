@@ -26,7 +26,6 @@ import com.arboviroses.conectaDengue.Api.DTO.response.DataNotificationInfoNoFilt
 import com.arboviroses.conectaDengue.Api.DTO.response.DataNotificationResponseDTO;
 import com.arboviroses.conectaDengue.Api.DTO.response.SaveCsvResponseDTO;
 import com.arboviroses.conectaDengue.Api.Exceptions.InvalidAgravoException;
-import com.arboviroses.conectaDengue.Api.Exceptions.InvalidDateStringException;
 import com.arboviroses.conectaDengue.Domain.Entities.Notification.Notification;
 import com.arboviroses.conectaDengue.Domain.Filters.NotificationFilters;
 import com.arboviroses.conectaDengue.Domain.Repositories.Notifications.NotificationRepository;
@@ -42,7 +41,7 @@ public class NotificationService {
     @Autowired
     private NotificationRepository notificationRepository;
 
-    public SaveCsvResponseDTO saveCSVDataInDatabase(MultipartFile file) throws IOException, CsvException, NumberFormatException, ParseException, InvalidDateStringException
+    public SaveCsvResponseDTO saveCSVDataInDatabase(MultipartFile file) throws IOException, CsvException, NumberFormatException, ParseException
     {
         try (CSVReader csvReader = new CSVReader(new InputStreamReader(file.getInputStream()))) {
             NeighborhoodsMossoro neighborhoods = new NeighborhoodsMossoro();

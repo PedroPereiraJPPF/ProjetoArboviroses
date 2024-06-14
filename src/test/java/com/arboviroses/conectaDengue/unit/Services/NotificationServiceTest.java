@@ -20,7 +20,6 @@ import org.springframework.mock.web.MockMultipartFile;
 import java.util.List;
 
 import com.arboviroses.conectaDengue.Api.DTO.response.SaveCsvResponseDTO;
-import com.arboviroses.conectaDengue.Api.Exceptions.InvalidDateStringException;
 import com.arboviroses.conectaDengue.Domain.Entities.Notification.Notification;
 import com.arboviroses.conectaDengue.Domain.Repositories.Notifications.NotificationRepository;
 import com.arboviroses.conectaDengue.Domain.Services.Notifications.NotificationService;
@@ -39,7 +38,7 @@ public class NotificationServiceTest {
     private NotificationService notificationService;
 
     @Test
-    public void test_if_save_csv_in_database_is_returning_sucess() throws ParseException, NumberFormatException, IOException, CsvException, InvalidDateStringException
+    public void test_if_save_csv_in_database_is_returning_sucess() throws ParseException, NumberFormatException, IOException, CsvException
     {   
         String csvContent = "NU_NOTIFIC,ID_AGRAVO,DT_NOTIFIC,DT_NASC,CLASSI_FIN,CS_SEXO,NM_BAIRRO,EVOLUCAO\n1,A90,10/06/2022,10/06/2003,1,F,ABOLICAO,1";
         MockMultipartFile mockMultipartFile = new MockMultipartFile("file", "test.csv", "text/csv", csvContent.getBytes());
@@ -51,7 +50,7 @@ public class NotificationServiceTest {
     }
 
     @Test
-    public void test_if_save_csv_in_database_is_using_the_method_saveAll_one_time() throws NumberFormatException, IOException, CsvException, ParseException, InvalidDateStringException
+    public void test_if_save_csv_in_database_is_using_the_method_saveAll_one_time() throws NumberFormatException, IOException, CsvException, ParseException
     {
         String csvContent = "NU_NOTIFIC,ID_AGRAVO,DT_NOTIFIC,DT_NASC,CLASSI_FIN,CS_SEXO,NM_BAIRRO,EVOLUCAO\n1,A90,10/06/2022,10/06/2003,1,F,ABOLICAO,1";
         MockMultipartFile mockMultipartFile = new MockMultipartFile("file", "test.csv", "text/csv", csvContent.getBytes());
