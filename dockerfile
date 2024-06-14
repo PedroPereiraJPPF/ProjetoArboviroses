@@ -1,6 +1,6 @@
-FROM openjdk:21-alpin
+FROM openjdk:21
 	
-ENV APP_NAME ProjetoArboviroses-3.2.1
+ENV APP_NAME ProjetoArboviroses
 
 COPY ./target/${APP_NAME}.jar  /app/${APP_NAME}.jar
 
