@@ -23,9 +23,9 @@ services:
     networks:
       - springapimysql-net  
     environment:
-      MYSQL_DATABASE: Arboviroses
-      MYSQL_USER: Pedro
-      MYSQL_PASSWORD: 123456
-      MYSQL_ROOT_PASSWORD: 123456
+      - MYSQL_DATABASE=${MYSQLDATABASE}
+      - MYSQL_USER=${MYSQL_USER}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
 networks:
   springapimysql-net:
