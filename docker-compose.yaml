@@ -1,0 +1,16 @@
+version: "3.8"
+services:
+  mysqldb:
+    image: "mysql:8.4"
+    restart: always
+    ports:
+      - 28602:28602
+    networks:
+      - springapimysql-net  
+    environment:
+      - MYSQL_DATABASE=railway
+      - MYSQL_USER=root
+      - MYSQL_PASSWORD=TZsteRURTLBMtAPHcFTWRtyJVtwdrFib
+      - MYSQL_ROOT_PASSWORD=TZsteRURTLBMtAPHcFTWRtyJVtwdrFib
+networks:
+  springapimysql-net:
