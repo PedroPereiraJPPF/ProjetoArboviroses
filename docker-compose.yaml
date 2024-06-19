@@ -1,16 +1,13 @@
-version: "3.8"
+version: '3.8'
+
 services:
-  mysqldb:
-    image: "mysql:8.4"
-    restart: always
-    ports:
-      - 28602:28602
-    networks:
-      - springapimysql-net  
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
     environment:
-      - MYSQL_DATABASE=railway
-      - MYSQL_USER=root
-      - MYSQL_PASSWORD=TZsteRURTLBMtAPHcFTWRtyJVtwdrFib
-      - MYSQL_ROOT_PASSWORD=TZsteRURTLBMtAPHcFTWRtyJVtwdrFib
-networks:
-  springapimysql-net:
+      - SPRING_DATASOURCE_URL=jdbc:mysql://${MYSQL_HOST}:${MYSQL_PORT}/${MYSQL_DATABASE}
+      - SPRING_DATASOURCE_USERNAME=${MYSQL_USER}
+      - SPRING_DATASOURCE_PASSWORD=${MYSQL_PASSWORD}
+    ports:
+      - "8080:8080"
