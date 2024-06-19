@@ -6,8 +6,8 @@ services:
       context: .
       dockerfile: Dockerfile
     environment:
-      - SPRING_DATASOURCE_URL=jdbc:mysql://viaduct.proxy.rlwy.net:3306/railway
-      - SPRING_DATASOURCE_USERNAME=root
-      - SPRING_DATASOURCE_PASSWORD=TZsteRURTLBMtAPHcFTWRtyJVtwdrFib
+      - SPRING_DATASOURCE_URL=jdbc:mysql://${MYSQL_HOST}:${MYSQL_PORT}/${MYSQL_DATABASE}
+      - SPRING_DATASOURCE_USERNAME=${MYSQL_USER}
+      - SPRING_DATASOURCE_PASSWORD=${MYSQL_PASSWORD}
     ports:
       - "8080:8080"
