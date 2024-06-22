@@ -23,6 +23,7 @@ import com.arboviroses.conectaDengue.Domain.Services.AuthenticationService;
 import com.arboviroses.conectaDengue.Domain.Services.JwtService;
 import com.arboviroses.conectaDengue.Domain.Services.RefreshTokenService;
 
+import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.validation.Valid;
 
 @RequestMapping("api/auth")
@@ -82,7 +83,7 @@ public class AuthenticationController {
                     return JwtResponse.builder()
                                         .jwtToken(accessToken)
                                         .token(refreshTokenRequest.getToken()).build();
-                    }).orElseThrow(() ->new RuntimeException("Refresh Token não é válido!"));
+                    }).orElseThrow(() -> new ExpiredJwtException(null, null, "Refresh Token não é válido!"));
 
         return ResponseEntity.ok(response);
     }
