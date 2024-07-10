@@ -1,16 +1,12 @@
 package com.arboviroses.conectaDengue.Domain.Services.Notifications;
 
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
 import com.arboviroses.conectaDengue.Utils.ConvertNameToIdAgravo;
-import com.arboviroses.conectaDengue.Utils.MossoroData.NeighborhoodsMossoro;
-
+import com.arboviroses.conectaDengue.Utils.File.DataToNotificationObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -29,10 +25,7 @@ import com.arboviroses.conectaDengue.Api.Exceptions.InvalidAgravoException;
 import com.arboviroses.conectaDengue.Domain.Entities.Notification.Notification;
 import com.arboviroses.conectaDengue.Domain.Filters.NotificationFilters;
 import com.arboviroses.conectaDengue.Domain.Repositories.Notifications.NotificationRepository;
-import com.opencsv.CSVReader;
 import com.opencsv.exceptions.CsvException;
-
-import static com.arboviroses.conectaDengue.Utils.ConvertCSVLineToNotifications.convertCsvLineToNotificationObject;
 
 import jakarta.servlet.http.HttpServletRequest;
 
@@ -41,34 +34,27 @@ public class NotificationService {
     @Autowired
     private NotificationRepository notificationRepository;
 
-    public SaveCsvResponseDTO saveCSVDataInDatabase(MultipartFile file) throws IOException, CsvException, NumberFormatException, ParseException
+    public SaveCsvResponseDTO saveNotificationsData(MultipartFile file) throws IOException, CsvException, NumberFormatException, ParseException
     {
-        try (CSVReader csvReader = new CSVReader(new InputStreamReader(file.getInputStream()))) {
-            NeighborhoodsMossoro neighborhoods = new NeighborhoodsMossoro();
-            String neighborhoodFromNotification;
-            List<String[]> csvLines = csvReader.readAll();
-            List<Notification> notifications = new ArrayList<>();
-            List<String> header = Arrays.asList(csvLines.get(0));
-            csvLines.remove(0);
+            List<Notification> notifications = null;
 
-            for(String[] csvLine : csvLines) {
-                try {
-                    neighborhoodFromNotification = csvLine[header.indexOf("NM_BAIRRO")];
-                    
-                    if((neighborhoodFromNotification = neighborhoods.search(neighborhoodFromNotification)) != null) {
-                        csvLine[header.indexOf("NM_BAIRRO")] = neighborhoodFromNotification;
-                        notifications.add(convertCsvLineToNotificationObject(csvLine, header));
-                    }
-                } catch (Exception e) {
-                    // no futuro pode ser adicionada uma tabela para salvar esses dados
-                    System.out.println(e.getMessage());
-                }
+            String fileName = file.getOriginalFilename();
+
+            if (fileName == null) {
+                throw new IOException("Nome do arquivo não pode ser nulo.");
+            }
+        
+            if (fileName.endsWith(".csv")) {
+                notifications = DataToNotificationObject.processCSVFile(file);
+            } else if (fileName.endsWith(".xlsx")) {
+                notifications = DataToNotificationObject.processXLSXFile(file);
+            } else {
+                throw new IOException("Tipo de arquivo não suportado: " + fileName);
             }
 
             notificationRepository.saveAll(notifications);
 
             return new SaveCsvResponseDTO(true);
-        }
     } 
 
     public Page<DataNotificationResponseDTO> getAllNotificationsPaginated(Pageable pageable)

@@ -34,8 +34,8 @@ public class NotificationController
     NotificationService notificationService;
 
     @PostMapping("/savecsvdata")
-    public ResponseEntity<SuccessResponseDTO<SaveCsvResponseDTO>> readCsv(@RequestParam("csv_file") MultipartFile file) throws Exception {
-        return ResponseEntity.ok().body(SuccessResponseDTO.setResponse(notificationService.saveCSVDataInDatabase(file), "dados do csv salvos com sucesso"));
+    public ResponseEntity<SuccessResponseDTO<SaveCsvResponseDTO>> readCsv(@RequestParam("file") MultipartFile file) throws Exception {
+        return ResponseEntity.ok().body(SuccessResponseDTO.setResponse(notificationService.saveNotificationsData(file), "dados do arquivo salvos com sucesso"));
     }
 
     @GetMapping("/notifications")

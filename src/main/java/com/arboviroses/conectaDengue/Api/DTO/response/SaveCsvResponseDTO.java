@@ -6,5 +6,5 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public class SaveCsvResponseDTO {
-    private Boolean data;
+    private Boolean success;
 }

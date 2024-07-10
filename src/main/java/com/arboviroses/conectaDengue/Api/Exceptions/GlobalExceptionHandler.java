@@ -136,9 +136,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Object> HandleExceptions(Exception exception, WebRequest request)
-    {
-        System.out.println(exception.getClass());
-    
+    {    
         ApiExceptionResponse exceptionResponse = new ApiExceptionResponse(HttpStatus.INTERNAL_SERVER_ERROR, exception.getMessage());
         return new ResponseEntity<>(exceptionResponse, new HttpHeaders(), exceptionResponse.getHttpStatus());
     }

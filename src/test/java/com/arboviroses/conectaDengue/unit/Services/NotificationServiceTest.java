@@ -43,10 +43,10 @@ public class NotificationServiceTest {
         String csvContent = "NU_NOTIFIC,ID_AGRAVO,DT_NOTIFIC,DT_NASC,CLASSI_FIN,CS_SEXO,NM_BAIRRO,EVOLUCAO\n1,A90,10/06/2022,10/06/2003,1,F,ABOLICAO,1";
         MockMultipartFile mockMultipartFile = new MockMultipartFile("file", "test.csv", "text/csv", csvContent.getBytes());
 
-        SaveCsvResponseDTO responseDTO = notificationService.saveCSVDataInDatabase(mockMultipartFile);
+        SaveCsvResponseDTO responseDTO = notificationService.saveNotificationsData(mockMultipartFile);
 
         Assertions.assertThat(responseDTO).isNotNull();
-        assertEquals(true, responseDTO.getData());
+        assertEquals(true, responseDTO.getSuccess());
     }
 
     @Test
@@ -56,7 +56,7 @@ public class NotificationServiceTest {
         MockMultipartFile mockMultipartFile = new MockMultipartFile("file", "test.csv", "text/csv", csvContent.getBytes());
         when(notificationRepository.saveAll(notificationListCaptor.capture())).thenAnswer(invocation -> invocation.getArgument(0));
 
-        notificationService.saveCSVDataInDatabase(mockMultipartFile);
+        notificationService.saveNotificationsData(mockMultipartFile);
 
         verify(notificationRepository, times(1)).saveAll(notificationListCaptor.capture());
     }

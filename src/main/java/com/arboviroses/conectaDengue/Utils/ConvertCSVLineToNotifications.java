@@ -14,11 +14,7 @@ public class ConvertCSVLineToNotifications {
         Date dataNotification = StringToDateCSV.ConvertStringToDate(line[header.indexOf("DT_NOTIFIC")]);
         int epidemiologicalWeek = calculateEpidemiologicalWeek(dataNotification);
 
-        int idade = 0;
-
-        if (header.indexOf("IDADE") != -1) {
-            idade = Integer.valueOf(line[header.indexOf("IDADE")]);
-        }
+        int idade = extractIdade(header, line);
 
         return new Notification(
             Long.valueOf(line[header.indexOf("NU_NOTIFIC")]),
@@ -28,7 +24,7 @@ public class ConvertCSVLineToNotifications {
             StringToDateCSV.ConvertStringToDate(line[header.indexOf("DT_NASC")]),
             line[header.indexOf("CLASSI_FIN")],
             line[header.indexOf("CS_SEXO")],
-            Integer.valueOf(line[header.indexOf("ID_BAIRRO")]),
+            line[header.indexOf("ID_BAIRRO")] != "" ? Integer.valueOf(line[header.indexOf("ID_BAIRRO")]) : 0,
             line[header.indexOf("NM_BAIRRO")],
             line[header.indexOf("EVOLUCAO")],
             epidemiologicalWeek
@@ -49,5 +45,21 @@ public class ConvertCSVLineToNotifications {
         int epidemiologicalWeek = (daysSinceFirstSunday / 7) + 1;
         
         return epidemiologicalWeek;
+    }
+
+    private static Integer extractIdade(List<String> header, String[] line) {
+        int idade = 0;
+        int idadeIndex = header.indexOf("IDADE");
+
+        if (idadeIndex != -1 && !line[idadeIndex].isEmpty()) {            
+            if (line[idadeIndex].contains(".")) {
+                String[] splitIdade = line[idadeIndex].split("\\.");
+                idade = Integer.valueOf(splitIdade[0]);
+            } else {
+                idade = Integer.valueOf(line[idadeIndex]);
+            }
+        }
+        
+        return idade;
     }
 }
