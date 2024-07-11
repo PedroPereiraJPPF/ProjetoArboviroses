@@ -20,7 +20,8 @@ public class StringToDateCSV
         }   
 
         if (dateInfos[0].length() > 2 || dateInfos[1].length() > 2 || dateInfos[2].length() > 4) {
-            return null;        }
+            return null;        
+        }
 
         String mes = formatFieldsOfDate(dateInfos[0], "0", 2);
         String dia = formatFieldsOfDate(dateInfos[1], "0", 2);
