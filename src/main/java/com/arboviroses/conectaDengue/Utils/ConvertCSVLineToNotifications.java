@@ -2,6 +2,7 @@ package com.arboviroses.conectaDengue.Utils;
 import java.text.ParseException;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.time.Period;
 import java.time.ZoneId;
 import java.util.Date;
 import java.util.List;
@@ -11,17 +12,21 @@ import com.arboviroses.conectaDengue.Domain.Entities.Notification.Notification;
 public class ConvertCSVLineToNotifications {
     public static Notification convertCsvLineToNotificationObject(String[] line, List<String> header) throws NumberFormatException, ParseException
     {   
+        Date dataNascimento = StringToDateCSV.ConvertStringToDate(line[header.indexOf("DT_NASC")]);
         Date dataNotification = StringToDateCSV.ConvertStringToDate(line[header.indexOf("DT_NOTIFIC")]);
         int epidemiologicalWeek = calculateEpidemiologicalWeek(dataNotification);
-
         int idade = extractIdade(header, line);
+
+        if (idade == 0) {
+            idade = getYearsDifference(dataNascimento, dataNotification);
+        }
 
         return new Notification(
             Long.valueOf(line[header.indexOf("NU_NOTIFIC")]),
             line[header.indexOf("ID_AGRAVO")],
             idade,
             dataNotification,
-            StringToDateCSV.ConvertStringToDate(line[header.indexOf("DT_NASC")]),
+            dataNascimento,
             line[header.indexOf("CLASSI_FIN")],
             line[header.indexOf("CS_SEXO")],
             line[header.indexOf("ID_BAIRRO")] != "" ? Integer.valueOf(line[header.indexOf("ID_BAIRRO")]) : 0,
@@ -61,5 +66,17 @@ public class ConvertCSVLineToNotifications {
         }
         
         return idade;
+    }
+
+    private static int getYearsDifference(Date date1, Date date2) {
+        LocalDate localDate1 = date1.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+        LocalDate localDate2 = date2.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+
+        if (date1 == null || date2 == null) {
+            return 0;
+        }
+
+        Period period = Period.between(localDate1, localDate2);
+        return period.getYears();
     }
 }
