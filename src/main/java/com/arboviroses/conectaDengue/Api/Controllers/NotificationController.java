@@ -9,6 +9,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
@@ -51,6 +52,12 @@ public class NotificationController
     @GetMapping("/notifications/count/sexo")
     public ResponseEntity<SuccessResponseDTO<CountAgravoBySexoDTO>> get(HttpServletRequest request) throws InvalidAgravoException {
         return ResponseEntity.ok().body(SuccessResponseDTO.setResponse(notificationService.getNotificationsInfoBySexo(request), null));
+    }
+
+    @PostMapping("/notifications/count/byYears")
+    public ResponseEntity<Map<Integer, Map<Integer, Long>>> getNotificationCountsByYear(@RequestBody List<Integer> years) {
+        Map<Integer, Map<Integer, Long>> result = notificationService.getNotificationCountsByYear(years);
+        return ResponseEntity.ok(result);
     }
 
     @GetMapping("/notifications/count/epidemiologicalWeek")

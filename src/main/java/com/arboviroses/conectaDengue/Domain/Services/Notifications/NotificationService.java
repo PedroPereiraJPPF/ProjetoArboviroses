@@ -2,6 +2,9 @@ package com.arboviroses.conectaDengue.Domain.Services.Notifications;
 
 import java.io.IOException;
 import java.text.ParseException;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -105,6 +108,30 @@ public class NotificationService {
 
     public long countByIdAgravo(HttpServletRequest request) throws Exception {
         return NotificationFilters.filterForCountByIdAgravo(request, notificationRepository);
+    }
+
+    public Map<Integer, Map<Integer, Long>> getNotificationCountsByYear(List<Integer> years) {
+        Map<Integer, Map<Integer, Long>> result = new HashMap<>();
+
+        for (Integer year : years) {
+            List<Notification> notificationsForYear = notificationRepository.findByYearAndIdAgravo(year, "A90");
+            Map<Integer, Long> notificationsByMonth = new HashMap<>();
+
+            for (Notification notification : notificationsForYear) {
+                int month = getMonth(notification.getDataNotification());
+                notificationsByMonth.merge(month, 1L, Long::sum);
+            }
+
+            result.put(year, notificationsByMonth);
+        }
+
+        return result;
+    }
+
+    private int getMonth(Date date) {
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(date);
+        return cal.get(Calendar.MONTH) + 1;
     }
 
     /**
