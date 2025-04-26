@@ -6,7 +6,7 @@ import java.util.Date;
 
 public class StringToDateCSV
 {
-    public static Date ConvertStringToDate(String dateString) throws ParseException 
+    public static Date ConvertStringToDate(String dateString) 
     {
         if (dateString == null || dateString == "") {
             return null;
@@ -27,9 +27,12 @@ public class StringToDateCSV
         String dia = formatFieldsOfDate(dateInfos[1], "0", 2);
         String formatedDateComplete = dia + "/" + mes + "/" + dateInfos[2];
 
-        Date finalDate = defaultDateFormat.parse(formatedDateComplete);
-
-        return finalDate;
+        try {
+            Date finalDate = defaultDateFormat.parse(formatedDateComplete);
+            return finalDate;
+        } catch (ParseException e) {
+            return null;
+        }
     }
 
     private static String formatFieldsOfDate(String field, String stringToAdd, int lenght)

@@ -1,5 +1,4 @@
 package com.arboviroses.conectaDengue.Utils; 
-import java.text.ParseException;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.Period;
@@ -10,7 +9,7 @@ import java.util.List;
 import com.arboviroses.conectaDengue.Domain.Entities.Notification.Notification;
 
 public class ConvertCSVLineToNotifications {
-    public static Notification convertCsvLineToNotificationObject(String[] line, List<String> header) throws NumberFormatException, ParseException
+    public static Notification convertCsvLineToNotificationObject(String[] line, List<String> header)
     {   
         Date dataNascimento = StringToDateCSV.ConvertStringToDate(line[header.indexOf("DT_NASC")]);
         Date dataNotification = StringToDateCSV.ConvertStringToDate(line[header.indexOf("DT_NOTIFIC")]);
@@ -68,13 +67,13 @@ public class ConvertCSVLineToNotifications {
         return idade;
     }
 
-    private static int getYearsDifference(Date date1, Date date2) {
-        LocalDate localDate1 = date1.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-        LocalDate localDate2 = date2.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-
+    private static int getYearsDifference(Date date1, Date date2) { 
         if (date1 == null || date2 == null) {
             return 0;
         }
+
+        LocalDate localDate1 = date1.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+        LocalDate localDate2 = date2.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
 
         Period period = Period.between(localDate1, localDate2);
         return period.getYears();

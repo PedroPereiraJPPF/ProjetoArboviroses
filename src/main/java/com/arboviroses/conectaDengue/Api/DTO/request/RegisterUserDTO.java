@@ -9,7 +9,7 @@ import lombok.Setter;
 @Setter
 public class RegisterUserDTO {
     @NotEmpty(message = "CPF não pode ser vazio")
-    @Size(min = 11, max = 11, message = "CPF deve ter 11 caracteres")
+    // @Size(min = 11, max = 14, message = "CPF deve ter 11 caracteres")
     private String cpf;
 
     @NotEmpty(message = "Senha não pode ser vazia")
@@ -23,6 +23,8 @@ public class RegisterUserDTO {
     private String fullName;
 
     public RegisterUserDTO setCpf(String cpf) {
+        System.out.println(cpf);
+
         this.cpf = cpf.replaceAll("\\D", "");
         return this;
     }
