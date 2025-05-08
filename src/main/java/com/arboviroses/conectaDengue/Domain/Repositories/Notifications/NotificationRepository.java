@@ -118,51 +118,21 @@ public interface NotificationRepository extends JpaRepository<Notification, Long
 
     @Query("""
         SELECT new com.arboviroses.conectaDengue.Api.DTO.response.BairroCountDTO(
-            n.nomeBairro,
-            count(n.nomeBairro),
-            SUM(CASE WHEN n.classificacao = '1' THEN 1 ELSE 0 END),
-            SUM(CASE WHEN n.classificacao = '2' THEN 1 ELSE 0 END),
-            SUM(CASE WHEN n.evolucao = '1' THEN 1 ELSE 0 END),
-            SUM(CASE WHEN n.evolucao = '2' THEN 1 ELSE 0 END),
-            SUM(CASE WHEN n.evolucao = '4' THEN 1 ELSE 0 END)
-            ) FROM Notification as n
-        group by n.nomeBairro
-        order by count(n.nomeBairro) desc
-        """)
-    List<BairroCountDTO> listarBairrosMaisAfetados();
-
-    @Query("""
-        SELECT new com.arboviroses.conectaDengue.Api.DTO.response.BairroCountDTO(
-            n.nomeBairro,
-            count(n.nomeBairro),
-            SUM(CASE WHEN n.classificacao = '1' THEN 1 ELSE 0 END),
-            SUM(CASE WHEN n.classificacao = '2' THEN 1 ELSE 0 END),
-            SUM(CASE WHEN n.evolucao = '1' THEN 1 ELSE 0 END),
-            SUM(CASE WHEN n.evolucao = '2' THEN 1 ELSE 0 END),
-            SUM(CASE WHEN n.evolucao = '4' THEN 1 ELSE 0 END)
-            ) FROM Notification as n
-        where YEAR(n.dataNotification) = :year
-        group by n.nomeBairro
-        order by count(n.nomeBairro) desc
-        """)
-    List<BairroCountDTO> listarBairrosMaisAfetadosByYear(int year);
-
-    @Query("""
-        SELECT new com.arboviroses.conectaDengue.Api.DTO.response.BairroCountDTO(
             n.nomeBairro, 
-            count(n.nomeBairro), 
-            SUM(CASE WHEN n.classificacao = '1' THEN 1 ELSE 0 END),
-            SUM(CASE WHEN n.classificacao = '2' THEN 1 ELSE 0 END),
+            COUNT(n.nomeBairro), 
             SUM(CASE WHEN n.evolucao = '1' THEN 1 ELSE 0 END),
             SUM(CASE WHEN n.evolucao = '2' THEN 1 ELSE 0 END),
-            SUM(CASE WHEN n.evolucao = '4' THEN 1 ELSE 0 END)
-        ) FROM Notification as n
-        where n.idAgravo = :idAgravo
-        and YEAR(n.dataNotification) = :year
-        group by n.nomeBairro
-        order by count(n.nomeBairro) desc
-        """)
-    List<BairroCountDTO> listarBairrosMaisAfetadosByIdAgravoAndYear(String idAgravo, int year);
+            SUM(CASE WHEN n.evolucao = '9' THEN 1 ELSE 0 END)
+        ) FROM Notification n
+        WHERE (:idAgravo IS NULL OR n.idAgravo = :idAgravo)
+        AND (:year IS NULL OR YEAR(n.dataNotification) = :year)
+        GROUP BY n.nomeBairro
+        ORDER BY COUNT(n.nomeBairro) DESC
+    """)
+    List<BairroCountDTO> listarBairrosMaisAfetados(
+        @Param("idAgravo") String idAgravo,
+        @Param("year") Integer year
+    );
 
     @Query("""
         SELECT 

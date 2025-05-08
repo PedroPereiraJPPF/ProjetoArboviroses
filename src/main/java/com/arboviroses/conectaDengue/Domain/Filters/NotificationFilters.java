@@ -85,15 +85,7 @@ public class NotificationFilters {
             agravoId = ConvertNameToIdAgravo.convert(agravoName);
         }
 
-        if (year != null) {
-            if (agravoId != null) {
-                return notificationRepository.listarBairrosMaisAfetadosByIdAgravoAndYear(agravoId, year);
-            }
-
-            return notificationRepository.listarBairrosMaisAfetadosByYear(year);
-        }
-
-        return notificationRepository.listarBairrosMaisAfetados();
+        return notificationRepository.listarBairrosMaisAfetados(agravoId, year);
     }
 
     public static long filterForCountByIdAgravo(HttpServletRequest request, NotificationRepository notificationRepository) throws Exception {

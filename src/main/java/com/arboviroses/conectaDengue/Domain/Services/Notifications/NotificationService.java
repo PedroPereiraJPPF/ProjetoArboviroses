@@ -147,7 +147,7 @@ public class NotificationService {
             notificationRepository.countBySexo("F"),
             notificationRepository.countByEvolucao("1"),
             notificationRepository.countByEvolucao("2"),
-            notificationRepository.listarBairrosMaisAfetados(),
+            notificationRepository.listarBairrosMaisAfetados(null, null),
             notificationRepository.countByIdAgravo("A90"),
             notificationRepository.countByIdAgravo("A92.0"), 
             notificationRepository.countByIdAgravo("A928")
