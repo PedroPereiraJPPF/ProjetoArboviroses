@@ -243,28 +243,23 @@ public interface NotificationRepository extends JpaRepository<Notification, Long
     long countBySexoAndYearAndBairro(String sexo, long year, String bairro);
 
     @Query("""
-        SELECT new com.arboviroses.conectaDengue.Api.DTO.response.AgravoCountBySemanaEpidemiologica(n.semanaEpidemiologica, count(n.idNotification), n.idAgravo) 
-        from Notification as n where n.nomeBairro = :bairro
-        group by n.semanaEpidemiologica, n.idAgravo
+        SELECT new com.arboviroses.conectaDengue.Api.DTO.response.AgravoCountBySemanaEpidemiologica(
+            n.semanaEpidemiologica,
+            COUNT(n.idNotification),
+            n.idAgravo
+        )
+        FROM Notification n
+        WHERE (:bairro IS NULL OR n.nomeBairro = :bairro)
+        AND (:agravo IS NULL OR n.idAgravo = :agravo)
+        AND (:ano IS NULL OR YEAR(n.dataNotification) = :ano)
+        GROUP BY n.semanaEpidemiologica, n.idAgravo
         ORDER BY n.semanaEpidemiologica
-        """)
-    List<AgravoCountBySemanaEpidemiologica> listarContagemPorSemanaEpidemiologicaByBairro(String bairro);
-
-    @Query("""
-        SELECT new com.arboviroses.conectaDengue.Api.DTO.response.AgravoCountBySemanaEpidemiologica(n.semanaEpidemiologica, count(n.idNotification), n.idAgravo) 
-        from Notification as n where YEAR(n.dataNotification) = :year and n.nomeBairro = :bairro
-        group by n.semanaEpidemiologica, n.idAgravo
-        ORDER BY n.semanaEpidemiologica
-        """)
-    List<AgravoCountBySemanaEpidemiologica> listarContagemPorSemanaEpidemiologicaByYearAndBairro(int year, String bairro);
-
-    @Query("""
-        SELECT new com.arboviroses.conectaDengue.Api.DTO.response.AgravoCountBySemanaEpidemiologica(n.semanaEpidemiologica, count(n.idNotification), n.idAgravo) 
-        from Notification as n where YEAR(n.dataNotification) = :year and n.idAgravo = :agravo and n.nomeBairro = :bairro
-        group by n.semanaEpidemiologica, n.idAgravo
-        ORDER BY n.semanaEpidemiologica
-        """)
-    List<AgravoCountBySemanaEpidemiologica> listarContagemPorSemanaEpidemiologicaByAgravoAndYearAndBairro(String agravo, int year, String bairro);
+    """)
+    List<AgravoCountBySemanaEpidemiologica> buscarContagemPorSemanaEpidemiologica(
+        @Param("agravo") String agravo,
+        @Param("ano") Integer ano,
+        @Param("bairro") String bairro
+    );
 
     @Query("""
         SELECT 

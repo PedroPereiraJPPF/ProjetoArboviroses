@@ -33,7 +33,7 @@ public class NotificationFilters {
 
     public static List<AgravoCountBySemanaEpidemiologica> filtersForNotificationsInfoBySemanaEpidemiologica(HttpServletRequest request, NotificationRepository notificationRepository) throws InvalidAgravoException
     {
-        Integer date = request.getParameter("year") != null ? Integer.valueOf(request.getParameter("year")) : null;
+        Integer ano = request.getParameter("year") != null ? Integer.valueOf(request.getParameter("year")) : null;
         String agravoName = request.getParameter("agravo");
         String bairro = request.getParameter("bairro");
         String agravoId = null;
@@ -42,25 +42,7 @@ public class NotificationFilters {
             agravoId = ConvertNameToIdAgravo.convert(agravoName);
         }
 
-        if (date != null) {
-            if (agravoId != null) {
-                if (bairro != null) {
-                    return notificationRepository.listarContagemPorSemanaEpidemiologicaByAgravoAndYearAndBairro(agravoId, date, bairro);
-                }
-                return notificationRepository.listarContagemPorSemanaEpidemiologica(agravoId, date);
-            }
-
-            if (bairro != null) {
-                return notificationRepository.listarContagemPorSemanaEpidemiologicaByYearAndBairro(date, bairro);
-            }
-            return notificationRepository.listarContagemPorSemanaEpidemiologica(date);
-        } 
-
-        if (bairro != null) {
-            return notificationRepository.listarContagemPorSemanaEpidemiologicaByBairro(bairro);
-        }
-
-        return notificationRepository.listarContagemPorSemanaEpidemiologica();
+        return notificationRepository.buscarContagemPorSemanaEpidemiologica(agravoId, ano, bairro);
     }
 
     public static Map<String, Integer> filtersForNotificationsByAgeRange(HttpServletRequest request, NotificationRepository notificationRepository) throws InvalidAgravoException {
