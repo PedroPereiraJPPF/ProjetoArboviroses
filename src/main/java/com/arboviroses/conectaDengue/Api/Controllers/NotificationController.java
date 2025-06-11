@@ -2,8 +2,6 @@ package com.arboviroses.conectaDengue.Api.Controllers;
 
 import java.util.List;
 import java.util.Map;
-
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
@@ -13,7 +11,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
-
 import com.arboviroses.conectaDengue.Api.DTO.response.AgravoCountByAgeRange;
 import com.arboviroses.conectaDengue.Api.DTO.response.AgravoCountByEpidemiologicalSemanaEpidemiologicaResponse;
 import com.arboviroses.conectaDengue.Api.DTO.response.BairroCountDTO;
@@ -23,20 +20,31 @@ import com.arboviroses.conectaDengue.Api.DTO.response.DataNotificationResponseDT
 import com.arboviroses.conectaDengue.Api.DTO.response.SaveCsvResponseDTO;
 import com.arboviroses.conectaDengue.Api.DTO.response.SuccessResponseDTO;
 import com.arboviroses.conectaDengue.Api.Exceptions.InvalidAgravoException;
+import com.arboviroses.conectaDengue.Domain.Entities.Notification.NotificationWithError;
 import com.arboviroses.conectaDengue.Domain.Services.Notifications.NotificationService;
-
+import com.arboviroses.conectaDengue.Domain.Services.Notifications.NotificationsErrorService;
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.RequestMapping;
+
 @RestController
 @RequestMapping("api")
+@RequiredArgsConstructor
 public class NotificationController 
 {
-    @Autowired
-    NotificationService notificationService;
+    private final NotificationService notificationService;
+    private final NotificationsErrorService notificationsErrorService;
 
     @PostMapping("/savecsvdata")
     public ResponseEntity<SuccessResponseDTO<SaveCsvResponseDTO>> readCsv(@RequestParam("file") MultipartFile file) throws Exception {
         return ResponseEntity.ok().body(SuccessResponseDTO.setResponse(notificationService.saveNotificationsData(file), "dados do arquivo salvos com sucesso"));
+    }
+
+    @GetMapping("/notifications/errors")
+    public ResponseEntity<SuccessResponseDTO<List<NotificationWithError>>> getAllNotificationsWithError() {
+        return ResponseEntity.ok().body(
+            SuccessResponseDTO.setResponse(notificationsErrorService.getAllNotificationsWithErrorFromLastIteration(), null)
+        );
     }
 
     @GetMapping("/notifications")

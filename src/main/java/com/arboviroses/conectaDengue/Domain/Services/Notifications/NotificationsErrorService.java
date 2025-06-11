@@ -47,7 +47,7 @@ public class NotificationsErrorService {
             notification.getClassificacao() == null ||
             notification.getIdadePaciente() == 0 ||
             notification.getSexo() == null ||
-            (notification.getIdBairro() != 0 && notification.getNomeBairro() == null) ||
+            (notification.getIdBairro() == 0 || notification.getNomeBairro() == null) ||
             notification.getEvolucao() == null
         );
     }
