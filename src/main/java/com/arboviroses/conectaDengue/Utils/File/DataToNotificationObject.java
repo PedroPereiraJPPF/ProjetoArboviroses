@@ -83,7 +83,9 @@ public class DataToNotificationObject {
 
                     if ((neighborhoodFromNotification = neighborhoods.search(neighborhoodFromNotification)) != null) {
                         csvLine[header.indexOf("NM_BAIRRO")] = neighborhoodFromNotification;
-                        notifications.add(convertCsvLineToNotificationObject(csvLine, header));
+                        Notification notification = convertCsvLineToNotificationObject(csvLine, header);
+
+                        notifications.add(notification);
                     }
                 } catch (Exception e) {
                     e.printStackTrace();

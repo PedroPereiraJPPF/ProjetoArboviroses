@@ -2,20 +2,18 @@ package com.arboviroses.conectaDengue.Domain.Services.Notifications;
 
 import java.io.IOException;
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import com.arboviroses.conectaDengue.Utils.ConvertNameToIdAgravo;
 import com.arboviroses.conectaDengue.Utils.File.DataToNotificationObject;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-
 import com.arboviroses.conectaDengue.Api.DTO.response.AgravoCountByAgeRange;
 import com.arboviroses.conectaDengue.Api.DTO.response.AgravoCountByEpidemiologicalSemanaEpidemiologicaResponse;
 import com.arboviroses.conectaDengue.Api.DTO.response.BairroCountDTO;
@@ -26,38 +24,64 @@ import com.arboviroses.conectaDengue.Api.DTO.response.DataNotificationResponseDT
 import com.arboviroses.conectaDengue.Api.DTO.response.SaveCsvResponseDTO;
 import com.arboviroses.conectaDengue.Api.Exceptions.InvalidAgravoException;
 import com.arboviroses.conectaDengue.Domain.Entities.Notification.Notification;
+import com.arboviroses.conectaDengue.Domain.Entities.Notification.NotificationWithError;
 import com.arboviroses.conectaDengue.Domain.Filters.NotificationFilters;
 import com.arboviroses.conectaDengue.Domain.Repositories.Notifications.NotificationRepository;
 import com.opencsv.exceptions.CsvException;
 
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.RequiredArgsConstructor;
 
 @Service
+@RequiredArgsConstructor
 public class NotificationService {
-    @Autowired
-    private NotificationRepository notificationRepository;
+    private final NotificationRepository notificationRepository;
+    private final NotificationsErrorService notificationsErrorService;
 
     public SaveCsvResponseDTO saveNotificationsData(MultipartFile file) throws IOException, CsvException, NumberFormatException, ParseException
     {
-            List<Notification> notifications = null;
+        List<Notification> notifications = null;
+        List<NotificationWithError> notificationsWithError = new ArrayList<>();
+        Long currentIteration = notificationsErrorService.getLastIteration() + 1;
+        String fileName = file.getOriginalFilename();
 
-            String fileName = file.getOriginalFilename();
+        if (fileName == null) {
+            throw new IOException("Nome do arquivo não pode ser nulo.");
+        }
+    
+        if (fileName.endsWith(".csv")) {
+            notifications = DataToNotificationObject.processCSVFile(file);
+        } else if (fileName.endsWith(".xlsx")) {
+            notifications = DataToNotificationObject.processXLSXFile(file);
+        } else {
+            throw new IOException("Tipo de arquivo não suportado: " + fileName);
+        }
 
-            if (fileName == null) {
-                throw new IOException("Nome do arquivo não pode ser nulo.");
+        for (Notification notification : notifications) {
+            if (notificationsErrorService.notificationHasError(notification)) {
+                NotificationWithError notificationWithError = NotificationWithError.builder()
+                    .idNotification(notification.getIdNotification())
+                    .idAgravo(notification.getIdAgravo())
+                    .idadePaciente(notification.getIdadePaciente())
+                    .dataNotification(notification.getDataNotification())
+                    .dataNascimento(notification.getDataNascimento())
+                    .classificacao(notification.getClassificacao())
+                    .sexo(notification.getSexo())
+                    .idBairro(notification.getIdBairro())
+                    .nomeBairro(notification.getNomeBairro())
+                    .evolucao(notification.getEvolucao())
+                    .semanaEpidemiologica(notification.getSemanaEpidemiologica())
+                    .iteration(currentIteration)
+                    .build();
+
+                notificationsWithError.add(notificationWithError);
             }
-        
-            if (fileName.endsWith(".csv")) {
-                notifications = DataToNotificationObject.processCSVFile(file);
-            } else if (fileName.endsWith(".xlsx")) {
-                notifications = DataToNotificationObject.processXLSXFile(file);
-            } else {
-                throw new IOException("Tipo de arquivo não suportado: " + fileName);
-            }
+        }
 
-            notificationRepository.saveAll(notifications);
+        notificationRepository.saveAll(notifications);
+        notificationsErrorService.insertListOfNotifications(notificationsWithError);
 
-            return new SaveCsvResponseDTO(true);
+        return new SaveCsvResponseDTO(true);
     } 
 
     public Page<DataNotificationResponseDTO> getAllNotificationsPaginated(Pageable pageable)
