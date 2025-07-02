@@ -29,6 +29,8 @@ import com.arboviroses.conectaDengue.Domain.Filters.NotificationFilters;
 import com.arboviroses.conectaDengue.Domain.Repositories.Notifications.NotificationRepository;
 import com.opencsv.exceptions.CsvException;
 
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 
@@ -37,6 +39,8 @@ import lombok.RequiredArgsConstructor;
 public class NotificationService {
     private final NotificationRepository notificationRepository;
     private final NotificationsErrorService notificationsErrorService;
+    @PersistenceContext
+    private EntityManager entityManager;
 
     public SaveCsvResponseDTO saveNotificationsData(MultipartFile file) throws IOException, CsvException, NumberFormatException, ParseException
     {
@@ -118,7 +122,7 @@ public class NotificationService {
     }
 
     public AgravoCountByAgeRange getNotificationsCountByAgeRange(HttpServletRequest request) throws InvalidAgravoException {
-        return new AgravoCountByAgeRange(NotificationFilters.filtersForNotificationsByAgeRange(request, notificationRepository));
+        return new AgravoCountByAgeRange(NotificationFilters.filtersForNotificationsByAgeRange(request, this.entityManager));
     }
 
     public List<BairroCountDTO> getBairroCount(HttpServletRequest request) throws InvalidAgravoException 

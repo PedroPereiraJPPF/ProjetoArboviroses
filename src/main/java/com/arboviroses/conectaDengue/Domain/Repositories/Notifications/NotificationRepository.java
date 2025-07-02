@@ -7,6 +7,7 @@ import java.util.Map;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -16,7 +17,7 @@ import com.arboviroses.conectaDengue.Api.DTO.response.BairroCountDTO;
 import com.arboviroses.conectaDengue.Domain.Entities.Notification.Notification;
 
 @Repository
-public interface NotificationRepository extends JpaRepository<Notification, Long> 
+public interface NotificationRepository extends JpaRepository<Notification, Long>, JpaSpecificationExecutor<Notification>, NotificationRepositoryCustom
 {
     Page<Notification> findByIdAgravo(Pageable pageable, String idAgravo);
 
@@ -27,23 +28,6 @@ public interface NotificationRepository extends JpaRepository<Notification, Long
     long countByIdAgravoAndSexo(String idAgravo, String sexo);
 
     long countByIdAgravoAndDataNotification(String idAgravo, Date date);
-
-    @Query("""
-            SELECT COUNT(n) 
-            FROM Notification as n 
-            WHERE (:agravoId IS NULL OR n.idAgravo = :agravoId)
-            AND (:sexo IS NULL OR n.sexo = :sexo)
-            AND (:nomeBairro IS NULL OR n.nomeBairro = :nomeBairro)
-            AND (:year IS NULL OR FUNCTION('YEAR', n.dataNotification) = :year)
-            AND (:evolucao IS NULL OR n.evolucao = :evolucao)
-    """)
-    long countByOptionalParams(
-        @Param("agravoId") String agravoId,
-        @Param("sexo") String sexo,
-        @Param("nomeBairro") String nomeBairro,
-        @Param("year") Integer year,
-        @Param("evolucao") String evolucao
-    );
 
     @Query("""
             SELECT count(n.idNotification) FROM Notification as n where n.idAgravo = :agravo and FUNCTION('YEAR', n.dataNotification) = :year 
@@ -133,33 +117,6 @@ public interface NotificationRepository extends JpaRepository<Notification, Long
         @Param("idAgravo") String idAgravo,
         @Param("year") Integer year
     );
-
-    @Query("""
-            SELECT 
-                SUM(CASE WHEN n.idadePaciente BETWEEN 0 AND 1 THEN 1 ELSE 0 END) AS age0to1,
-                SUM(CASE WHEN n.idadePaciente BETWEEN 2 AND 3 THEN 1 ELSE 0 END) AS age2to3,
-                SUM(CASE WHEN n.idadePaciente BETWEEN 4 AND 5 THEN 1 ELSE 0 END) AS age4to5,
-                SUM(CASE WHEN n.idadePaciente BETWEEN 6 AND 7 THEN 1 ELSE 0 END) AS age6to7,
-                SUM(CASE WHEN n.idadePaciente BETWEEN 8 AND 9 THEN 1 ELSE 0 END) AS age8to9,
-                SUM(CASE WHEN n.idadePaciente BETWEEN 10 AND 19 THEN 1 ELSE 0 END) AS age10to19,
-                SUM(CASE WHEN n.idadePaciente BETWEEN 20 AND 29 THEN 1 ELSE 0 END) AS age20to29,
-                SUM(CASE WHEN n.idadePaciente BETWEEN 30 AND 39 THEN 1 ELSE 0 END) AS age30to39,
-                SUM(CASE WHEN n.idadePaciente BETWEEN 40 AND 49 THEN 1 ELSE 0 END) AS age40to49,
-                SUM(CASE WHEN n.idadePaciente BETWEEN 50 AND 59 THEN 1 ELSE 0 END) AS age50to59,
-                SUM(CASE WHEN n.idadePaciente BETWEEN 60 AND 69 THEN 1 ELSE 0 END) AS age60to69,
-                SUM(CASE WHEN n.idadePaciente BETWEEN 70 AND 79 THEN 1 ELSE 0 END) AS age70to79,
-                SUM(CASE WHEN n.idadePaciente BETWEEN 80 AND 89 THEN 1 ELSE 0 END) AS age80to89,
-                SUM(CASE WHEN n.idadePaciente BETWEEN 90 AND 99 THEN 1 ELSE 0 END) AS age90to99
-            FROM Notification n
-            WHERE (:year IS NULL OR FUNCTION('YEAR', n.dataNotification) = :year)
-              AND (:idAgravo IS NULL OR n.idAgravo = :idAgravo)
-              AND (:nomeBairro IS NULL Or n.nomeBairro = :nomeBairro)
-    """)
-    Map<String, Integer> listarContagemPorFaixaDeIdadeComFiltros(
-        @Param("idAgravo") String idAgravo,
-        @Param("year") Integer year,
-        @Param("nomeBairro") String nomeBairro
-    );
     
     @Query("""
             SELECT 
@@ -241,25 +198,6 @@ public interface NotificationRepository extends JpaRepository<Notification, Long
             SELECT count(n.idNotification) FROM Notification as n where n.sexo = :sexo and FUNCTION('YEAR', n.dataNotification) = :year and n.nomeBairro = :bairro
             """)
     long countBySexoAndYearAndBairro(String sexo, long year, String bairro);
-
-    @Query("""
-            SELECT new com.arboviroses.conectaDengue.Api.DTO.response.AgravoCountBySemanaEpidemiologica(
-                n.semanaEpidemiologica,
-                COUNT(n.idNotification),
-                n.idAgravo
-            )
-            FROM Notification n
-            WHERE (:bairro IS NULL OR n.nomeBairro = :bairro)
-            AND (:agravo IS NULL OR n.idAgravo = :agravo)
-            AND (:ano IS NULL OR FUNCTION('YEAR', n.dataNotification) = :ano)
-            GROUP BY n.semanaEpidemiologica, n.idAgravo
-            ORDER BY n.semanaEpidemiologica
-    """)
-    List<AgravoCountBySemanaEpidemiologica> buscarContagemPorSemanaEpidemiologica(
-        @Param("agravo") String agravo,
-        @Param("ano") Integer ano,
-        @Param("bairro") String bairro
-    );
 
     @Query("""
             SELECT 
