@@ -18,8 +18,6 @@ import com.arboviroses.conectaDengue.Api.DTO.response.AgravoCountByAgeRange;
 import com.arboviroses.conectaDengue.Api.DTO.response.AgravoCountByEpidemiologicalSemanaEpidemiologicaResponse;
 import com.arboviroses.conectaDengue.Api.DTO.response.BairroCountDTO;
 import com.arboviroses.conectaDengue.Api.DTO.response.CountAgravoBySexoDTO;
-import com.arboviroses.conectaDengue.Api.DTO.response.DataNotificationInfoDTO;
-import com.arboviroses.conectaDengue.Api.DTO.response.DataNotificationInfoNoFilterDTO;
 import com.arboviroses.conectaDengue.Api.DTO.response.DataNotificationResponseDTO;
 import com.arboviroses.conectaDengue.Api.DTO.response.SaveCsvResponseDTO;
 import com.arboviroses.conectaDengue.Api.Exceptions.InvalidAgravoException;
@@ -160,47 +158,5 @@ public class NotificationService {
         Calendar cal = Calendar.getInstance();
         cal.setTime(date);
         return cal.get(Calendar.MONTH) + 1;
-    }
-
-    /**
-     * @test essas são funções feitas para testes, não devem ficar disponiveis em produção
-     * @return
-     */
-
-    public DataNotificationInfoDTO getNotificationsInfoForGraphics()
-    {
-        return new DataNotificationInfoNoFilterDTO(
-            notificationRepository.count(),
-            notificationRepository.countBySexo("M"),
-            notificationRepository.countBySexo("F"),
-            notificationRepository.countByEvolucao("1"),
-            notificationRepository.countByEvolucao("2"),
-            notificationRepository.listarBairrosMaisAfetados(null, null),
-            notificationRepository.countByIdAgravo("A90"),
-            notificationRepository.countByIdAgravo("A92.0"), 
-            notificationRepository.countByIdAgravo("A928")
-        );
-    }
-
-    public DataNotificationInfoDTO getNotificationsInfoForGraphicsByIdAgravo(HttpServletRequest request) throws InvalidAgravoException
-    {
-        if (request.getParameter("agravo") == null) {
-            return getNotificationsInfoForGraphics();
-        }
-        
-        String agravo = ConvertNameToIdAgravo.convert(request.getParameter("agravo"));
-
-        return new DataNotificationInfoDTO(
-            notificationRepository.countByIdAgravo(agravo),
-            notificationRepository.countByIdAgravoAndSexo(agravo, "M"),
-            notificationRepository.countByIdAgravoAndSexo(agravo, "F"),
-            notificationRepository.countByIdAgravoAndEvolucao(agravo, "0"),
-            notificationRepository.countByIdAgravoAndEvolucao(agravo, "1"),
-            null
-        );
-    }
-
-    public Map<String, Integer> listEspecificNotificationData(HttpServletRequest request) throws Exception {
-        return NotificationFilters.filterForListByDadosEspecificados(request, notificationRepository);
     }
 }

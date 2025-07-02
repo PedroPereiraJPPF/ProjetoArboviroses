@@ -15,7 +15,6 @@ import com.arboviroses.conectaDengue.Api.DTO.response.AgravoCountByAgeRange;
 import com.arboviroses.conectaDengue.Api.DTO.response.AgravoCountByEpidemiologicalSemanaEpidemiologicaResponse;
 import com.arboviroses.conectaDengue.Api.DTO.response.BairroCountDTO;
 import com.arboviroses.conectaDengue.Api.DTO.response.CountAgravoBySexoDTO;
-import com.arboviroses.conectaDengue.Api.DTO.response.DataNotificationInfoDTO;
 import com.arboviroses.conectaDengue.Api.DTO.response.DataNotificationResponseDTO;
 import com.arboviroses.conectaDengue.Api.DTO.response.SaveCsvResponseDTO;
 import com.arboviroses.conectaDengue.Api.DTO.response.SuccessResponseDTO;
@@ -91,21 +90,5 @@ public class NotificationController
     @GetMapping("/notifications/count/evolucao")
     public ResponseEntity<SuccessResponseDTO<Long>> getEvolucao(HttpServletRequest request) throws Exception {
         return ResponseEntity.ok().body(SuccessResponseDTO.setResponse(notificationService.countByEvolucao(request), null));
-    }
-
-    @GetMapping("/notifications/count/informacoes")
-    public ResponseEntity<SuccessResponseDTO<Map<String, Integer>>> getInformacoes(HttpServletRequest request) throws Exception {
-        return ResponseEntity.ok().body(SuccessResponseDTO.setResponse(notificationService.listEspecificNotificationData(request), null));
-    }
-
-    /**
-     * @comment esse endpoint serve para testes
-     * @param request
-     * @return
-     * @throws InvalidAgravoException
-     */
-    @GetMapping("/notifications/getinfo")
-    public ResponseEntity<DataNotificationInfoDTO> getNotificationsBySexo(HttpServletRequest request) throws InvalidAgravoException {
-        return ResponseEntity.ok().body(notificationService.getNotificationsInfoForGraphicsByIdAgravo(request));
     }
 }

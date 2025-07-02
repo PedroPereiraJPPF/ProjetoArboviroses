@@ -275,35 +275,4 @@ public class NotificationFilters {
 
         return notificationRepository.count(spec);
     }
-
-    public static Map<String, Integer> filterForListByDadosEspecificados(HttpServletRequest request, NotificationRepository notificationRepository) throws Exception {
-        Integer year = request.getParameter("year") != null ? Integer.valueOf(request.getParameter("year")) : null;
-        String agravoName = request.getParameter("agravo");
-        String bairro = request.getParameter("bairro");
-        String agravoId = null;
-
-        if (agravoName == null) {
-            if (year == null) {
-                if (bairro == null) {
-                    return notificationRepository.listarDadosEspecificadosDasNotificacoes();
-                }
-                return notificationRepository.listarDadosEspecificadosDasNotificacoesByBairro(bairro);
-            } 
-        }
-
-        agravoId = ConvertNameToIdAgravo.convert(agravoName);
-
-        if (year != null) {
-            if (bairro != null) {
-                return notificationRepository.listarDadosEspecificadosDasNotificacoesByIdAgravoAndYearAndBairro(agravoId, year, bairro);
-            }
-            return notificationRepository.listarDadosEspecificadosDasNotificacoes(agravoId, year);
-        }
-
-        if (bairro != null) {
-            return notificationRepository.listarDadosEspecificadosDasNotificacoesByIdAgravoAndBairro(agravoId, bairro);
-        }
-
-        return notificationRepository.listarDadosEspecificadosDasNotificacoes(agravoId);
-    } 
 }
