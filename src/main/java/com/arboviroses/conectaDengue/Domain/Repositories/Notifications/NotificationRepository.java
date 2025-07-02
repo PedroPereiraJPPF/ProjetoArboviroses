@@ -56,8 +56,11 @@ public interface NotificationRepository extends JpaRepository<Notification, Long
     long countByIdAgravoAndEvolucao(String idAgravo, String evolucao);
 
     @Query("""
-            SELECT n FROM Notification n WHERE FUNCTION('YEAR', n.dataNotification) = :year and n.idAgravo = :idAgravo
-            """)
+        SELECT n 
+        FROM Notification n 
+        WHERE FUNCTION('date_part', 'year', n.dataNotification) = :year 
+        AND n.idAgravo = :idAgravo
+        """)
     List<Notification> findByYearAndIdAgravo(int year, String idAgravo);
 
     @Query("""

@@ -49,7 +49,8 @@ public class NotificationFilters {
                 predicates.add(criteriaBuilder.equal(root.get("nomeBairro"), bairro));
             }
             if (year != null) {
-                predicates.add(criteriaBuilder.equal(criteriaBuilder.function("YEAR", Integer.class, root.get("dataNotification")), year));
+                predicates.add(criteriaBuilder.equal(criteriaBuilder.function("date_part", Integer.class, 
+                                                    criteriaBuilder.literal("year"), root.get("dataNotification")), year));
             }
             
             return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
@@ -70,7 +71,6 @@ public class NotificationFilters {
     }
 
     public static List<AgravoCountBySemanaEpidemiologica> filtersForNotificationsInfoBySemanaEpidemiologica(HttpServletRequest request, NotificationRepository notificationRepository) throws InvalidAgravoException {
-        // 1. Obter parâmetros da requisição
         Integer ano = request.getParameter("year") != null ? Integer.valueOf(request.getParameter("year")) : null;
         String agravoName = request.getParameter("agravo");
         String bairro = request.getParameter("bairro");
@@ -80,7 +80,6 @@ public class NotificationFilters {
             agravoId = ConvertNameToIdAgravo.convert(agravoName);
         }
         
-        // 2. Construir a Specification com os filtros dinâmicos
         final String finalAgravoId = agravoId;
         Specification<Notification> spec = (root, query, criteriaBuilder) -> {
             List<Predicate> predicates = new ArrayList<>();
@@ -89,8 +88,8 @@ public class NotificationFilters {
                 predicates.add(criteriaBuilder.equal(root.get("idAgravo"), finalAgravoId));
             }
             if (ano != null) {
-                // Supondo que o campo do ano na sua entidade se chama 'dataNotification'
-                predicates.add(criteriaBuilder.equal(criteriaBuilder.function("YEAR", Integer.class, root.get("dataNotification")), ano)); 
+                predicates.add(criteriaBuilder.equal(criteriaBuilder.function("date_part", Integer.class, 
+                                                    criteriaBuilder.literal("year"), root.get("dataNotification")), ano)); 
             }
             if (bairro != null && !bairro.isEmpty()) {
                 predicates.add(criteriaBuilder.equal(root.get("nomeBairro"), bairro));
@@ -99,7 +98,6 @@ public class NotificationFilters {
             return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
         };
         
-        // 3. Chamar o método customizado e seguro
         return notificationRepository.buscarContagemPorSemanaEpidemiologica(spec);
     }
 
@@ -148,8 +146,8 @@ public class NotificationFilters {
             parameters.put("idAgravo", agravoId);
         }
         if (year != null) {
-            jpql.append(" AND FUNCTION('YEAR', n.dataNotification) = :year");
-            parameters.put("year", year);
+            jpql.append(" AND FUNCTION('date_part', 'year', n.dataNotification) = :year");
+            parameters.put("year", year.doubleValue());
         }
         if (bairro != null && !bairro.isEmpty()) {
             jpql.append(" AND n.nomeBairro = :nomeBairro");
@@ -179,84 +177,102 @@ public class NotificationFilters {
         return resultMap;
     }
 
-    public static List<BairroCountDTO> filtersForNotificationsCountNeighborhoods(HttpServletRequest request, NotificationRepository notificationRepository) throws InvalidAgravoException {
+    public static List<BairroCountDTO> filtersForNotificationsCountNeighborhoods(
+        HttpServletRequest request,
+        NotificationRepository notificationRepository
+    ) throws InvalidAgravoException {
         Integer year = request.getParameter("year") != null ? Integer.valueOf(request.getParameter("year")) : null;
         String agravoName = request.getParameter("agravo");
+        String bairro = request.getParameter("bairro");
         String agravoId = null;
 
-        if (agravoName != null) {
+        if (agravoName != null && !agravoName.isEmpty()) {
             agravoId = ConvertNameToIdAgravo.convert(agravoName);
         }
 
-        return notificationRepository.listarBairrosMaisAfetados(agravoId, year);
+        final String finalAgravoId = agravoId;
+        final String finalBairro = bairro;
+
+        Specification<Notification> spec = (root, query, criteriaBuilder) -> {
+            List<Predicate> predicates = new ArrayList<>();
+
+            if (finalAgravoId != null) {
+                predicates.add(criteriaBuilder.equal(root.get("idAgravo"), finalAgravoId));
+            }
+
+            if (year != null) {
+                predicates.add(criteriaBuilder.equal(
+                    criteriaBuilder.function("date_part", Integer.class,
+                        criteriaBuilder.literal("year"),
+                        root.get("dataNotification")
+                    ),
+                    year
+                ));
+            }
+
+            if (finalBairro != null && !finalBairro.isEmpty()) {
+                predicates.add(criteriaBuilder.equal(root.get("nomeBairro"), finalBairro));
+            }
+
+            return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
+        };
+
+        return notificationRepository.buscarContagemPorBairro(spec);
     }
 
     public static long filterForCountByIdAgravo(HttpServletRequest request, NotificationRepository notificationRepository) throws Exception {
-        // 1. Obter os parâmetros da requisição
         String agravoName = request.getParameter("agravo");
         String bairro = request.getParameter("bairro");
         Integer year = request.getParameter("year") != null ? Integer.valueOf(request.getParameter("year")) : null;
 
-        // A conversão do ID do agravo é mantida
         String agravoId = ConvertNameToIdAgravo.convert(agravoName);
 
-        // 2. Criar a especificação dinâmica
         Specification<Notification> spec = (root, query, criteriaBuilder) -> {
             List<Predicate> predicates = new ArrayList<>();
 
-            // Adiciona a condição para 'agravoId' (considerado obrigatório neste método)
             predicates.add(criteriaBuilder.equal(root.get("idAgravo"), agravoId));
 
-            // Adiciona os filtros opcionais APENAS SE eles existirem
             if (bairro != null && !bairro.isEmpty()) {
                 predicates.add(criteriaBuilder.equal(root.get("nomeBairro"), bairro));
             }
             if (year != null) {
-                predicates.add(criteriaBuilder.equal(criteriaBuilder.function("YEAR", Integer.class, root.get("dataNotification")), year));
+                predicates.add(criteriaBuilder.equal(criteriaBuilder.function("date_part", Integer.class,
+                                            criteriaBuilder.literal("year"), root.get("dataNotification")), year));
             }
 
-            // Combina as condições com "AND"
             return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
         };
         
-        // 3. Executa a contagem com a especificação e retorna o resultado
         return notificationRepository.count(spec);
     }
 
     public static long filterForCountByEvolucao(HttpServletRequest request, NotificationRepository notificationRepository) throws Exception {
-        // 1. Obter os parâmetros da requisição
         Integer year = request.getParameter("year") != null ? Integer.valueOf(request.getParameter("year")) : null;
         String agravoName = request.getParameter("agravo");
         String bairro = request.getParameter("bairro");
         
-        // Converte o nome do agravo (considerado obrigatório)
         String agravoId = ConvertNameToIdAgravo.convert(agravoName);
 
-        // Valida o parâmetro 'evolucao' (obrigatório)
         String evolucao = Optional.ofNullable(request.getParameter("evolucao"))
                 .orElseThrow(() -> new Exception("Informe o nivel da evolucao"));
 
-        // 2. Criar a especificação dinâmica
         Specification<Notification> spec = (root, query, criteriaBuilder) -> {
             List<Predicate> predicates = new ArrayList<>();
 
-            // Adiciona as condições obrigatórias
             predicates.add(criteriaBuilder.equal(root.get("idAgravo"), agravoId));
             predicates.add(criteriaBuilder.equal(root.get("evolucao"), evolucao));
 
-            // Adiciona os filtros opcionais APENAS SE eles existirem
             if (bairro != null && !bairro.isEmpty()) {
                 predicates.add(criteriaBuilder.equal(root.get("nomeBairro"), bairro));
             }
             if (year != null) {
-                predicates.add(criteriaBuilder.equal(criteriaBuilder.function("YEAR", Integer.class, root.get("dataNotification")), year));
+                predicates.add(criteriaBuilder.equal(criteriaBuilder.function("date_part", Integer.class,
+                                            criteriaBuilder.literal("year"), root.get("dataNotification")), year));
             }
 
-            // Combina as condições com "AND"
             return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
         };
 
-        // 3. Executa a contagem com a especificação e retorna o resultado
         return notificationRepository.count(spec);
     }
 
