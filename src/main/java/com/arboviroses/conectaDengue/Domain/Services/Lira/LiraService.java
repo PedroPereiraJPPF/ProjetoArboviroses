@@ -21,6 +21,9 @@ public class LiraService {
     private final LiraRepository liraRepository;
 
     public List<Lira> saveLiraData(MultipartFile file, Integer ano, Integer liraNumber) throws IOException {
+        // Primeiro, remove todos os dados existentes para o ano e número do LIRA especificados
+        liraRepository.deleteByAnoAndLiraNumber(ano, liraNumber);
+        
         List<Lira> liras = new ArrayList<>();
         try (InputStream inputStream = file.getInputStream();
              Workbook workbook = new XSSFWorkbook(inputStream)) {
