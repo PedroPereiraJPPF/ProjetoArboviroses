@@ -20,7 +20,7 @@ public class LiraService {
 
     private final LiraRepository liraRepository;
 
-    public List<Lira> saveLiraData(MultipartFile file, Integer ano) throws IOException {
+    public List<Lira> saveLiraData(MultipartFile file, Integer ano, Integer liraNumber) throws IOException {
         List<Lira> liras = new ArrayList<>();
         try (InputStream inputStream = file.getInputStream();
              Workbook workbook = new XSSFWorkbook(inputStream)) {
@@ -28,10 +28,8 @@ public class LiraService {
             Sheet sheet = workbook.getSheetAt(0);
             Iterator<Row> rowIterator = sheet.iterator();
 
-            // Pular cabeçalho
             if (rowIterator.hasNext()) rowIterator.next();
             if (rowIterator.hasNext()) rowIterator.next();
-
 
             while (rowIterator.hasNext()) {
                 Row row = rowIterator.next();
@@ -57,10 +55,10 @@ public class LiraService {
                     lira.setTotalDepositosPos(getCellValueAsInt(row.getCell(12)));
                     lira.setIndiceBreteau(getCellValueAsDouble(row.getCell(13)));
                     lira.setAno(ano);
+                    lira.setLiraNumber(liraNumber);
 
                     liras.add(lira);
                 } catch (Exception e) {
-                    // Logar erro ou tratar linha com problema
                     System.err.println("Erro ao processar linha do LIRA: " + row.getRowNum() + " - " + e.getMessage());
                 }
             }
@@ -70,6 +68,10 @@ public class LiraService {
 
     public List<Lira> getLiraByAno(Integer ano) {
         return liraRepository.findByAno(ano);
+    }
+
+    public List<Lira> getLiraByAnoAndNumber(Integer ano, Integer liraNumber) {
+        return liraRepository.findByAnoAndLiraNumber(ano, liraNumber);
     }
 
     private String getCellValueAsString(Cell cell) {

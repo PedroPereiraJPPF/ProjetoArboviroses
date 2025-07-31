@@ -10,4 +10,5 @@ import java.util.List;
 public interface LiraRepository extends JpaRepository<Lira, Long> {
     List<Lira> findByAno(Integer ano);
     List<Lira> findByBairroAndAno(String bairro, Integer ano);
+    List<Lira> findByAnoAndLiraNumber(Integer ano, Integer liraNumber);
 }
