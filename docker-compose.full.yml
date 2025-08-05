@@ -1,0 +1,85 @@
+version: '3.8'
+
+services:
+  # Backend Java (Spring Boot)
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/${PG_DATABASE:-arboviroses}
+      - SPRING_DATASOURCE_USERNAME=${PG_USER:-postgres}
+      - SPRING_DATASOURCE_PASSWORD=${PG_PASSWORD:-password}
+      - SPRING_PROFILES_ACTIVE=docker
+    ports:
+      - "8080:8080"
+    depends_on:
+      - db
+    restart: unless-stopped
+    networks:
+      - app-network
+
+  # Frontend React/Vite
+  frontend:
+    build:
+      context: ../ArbovirosesFront
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      - VITE_API_URL=http://localhost:8080/api
+      - VITE_PYTHON_API_URL=http://localhost:8000
+    restart: unless-stopped
+    networks:
+      - app-network
+
+  # API Python (FastAPI)
+  python-api:
+    build:
+      context: ../Arboviroses-python
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    restart: unless-stopped
+    networks:
+      - app-network
+
+  # Banco de Dados PostgreSQL
+  db:
+    image: postgres:15
+    environment:
+      - POSTGRES_DB=${PG_DATABASE:-arboviroses}
+      - POSTGRES_USER=${PG_USER:-postgres}
+      - POSTGRES_PASSWORD=${PG_PASSWORD:-password}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./init-db:/docker-entrypoint-initdb.d
+    restart: unless-stopped
+    networks:
+      - app-network
+
+  # Nginx como proxy reverso (opcional)
+  nginx:
+    image: nginx:alpine
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+      - ./nginx/ssl:/etc/nginx/ssl
+    depends_on:
+      - frontend
+      - backend
+      - python-api
+    restart: unless-stopped
+    networks:
+      - app-network
+
+volumes:
+  postgres_data:
+
+networks:
+  app-network:
+    driver: bridge
