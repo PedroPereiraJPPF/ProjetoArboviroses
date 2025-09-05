@@ -1,15 +1,29 @@
 package com.arboviroses.conectaDengue.Domain.Services.Notifications;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import com.arboviroses.conectaDengue.Utils.ConvertNameToIdAgravo;
-import com.arboviroses.conectaDengue.Utils.File.DataToNotificationObject;
+import com.arboviroses.conectaDengue.Utils.MemoryOptimizationUtil;
+import com.arboviroses.conectaDengue.Utils.MossoroData.NeighborhoodsMossoro;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellValue;
+import org.apache.poi.ss.usermodel.DateUtil;
+import org.apache.poi.ss.usermodel.FormulaEvaluator;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -25,12 +39,13 @@ import com.arboviroses.conectaDengue.Domain.Entities.Notification.Notification;
 import com.arboviroses.conectaDengue.Domain.Entities.Notification.NotificationWithError;
 import com.arboviroses.conectaDengue.Domain.Filters.NotificationFilters;
 import com.arboviroses.conectaDengue.Domain.Repositories.Notifications.NotificationRepository;
+import com.opencsv.CSVReader;
 import com.opencsv.exceptions.CsvException;
-
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import static com.arboviroses.conectaDengue.Utils.ConvertCSVLineToNotifications.convertCsvLineToNotificationObject;
 
 @Service
 @RequiredArgsConstructor
@@ -42,49 +57,277 @@ public class NotificationService {
 
     public SaveCsvResponseDTO saveNotificationsData(MultipartFile file) throws IOException, CsvException, NumberFormatException, ParseException
     {
-        List<Notification> notifications = null;
-        List<NotificationWithError> notificationsWithError = new ArrayList<>();
-        Long currentIteration = notificationsErrorService.getLastIteration() + 1;
         String fileName = file.getOriginalFilename();
-
         if (fileName == null) {
             throw new IOException("Nome do arquivo não pode ser nulo.");
         }
     
         if (fileName.endsWith(".csv")) {
-            notifications = DataToNotificationObject.processCSVFile(file);
+            return processCSVFileStreaming(file);
         } else if (fileName.endsWith(".xlsx")) {
-            notifications = DataToNotificationObject.processXLSXFile(file);
+            return processXLSXFileStreaming(file);
         } else {
             throw new IOException("Tipo de arquivo não suportado: " + fileName);
         }
+    }
 
-        for (Notification notification : notifications) {
-            if (notificationsErrorService.notificationHasError(notification)) {
-                NotificationWithError notificationWithError = NotificationWithError.builder()
-                    .idNotification(notification.getIdNotification())
-                    .idAgravo(notification.getIdAgravo())
-                    .idadePaciente(notification.getIdadePaciente())
-                    .dataNotification(notification.getDataNotification())
-                    .dataNascimento(notification.getDataNascimento())
-                    .classificacao(notification.getClassificacao())
-                    .sexo(notification.getSexo())
-                    .idBairro(notification.getIdBairro())
-                    .nomeBairro(notification.getNomeBairro())
-                    .evolucao(notification.getEvolucao())
-                    .semanaEpidemiologica(notification.getSemanaEpidemiologica())
-                    .iteration(currentIteration)
-                    .build();
-
-                notificationsWithError.add(notificationWithError);
+    private SaveCsvResponseDTO processCSVFileStreaming(MultipartFile file) throws IOException, CsvException {
+        Long currentIteration = notificationsErrorService.getLastIteration() + 1;
+        
+        int batchSize = MemoryOptimizationUtil.getDynamicBatchSize();
+        MemoryOptimizationUtil.logMemoryStats("Início processamento CSV");
+        
+        List<Notification> notificationBatch = new ArrayList<>(batchSize);
+        List<NotificationWithError> errorBatch = new ArrayList<>(batchSize);
+        
+        try (CSVReader csvReader = new CSVReader(new InputStreamReader(file.getInputStream()))) {
+            String[] headerArray = csvReader.readNext();
+            if (headerArray == null) {
+                throw new IOException("Arquivo CSV vazio ou inválido.");
             }
+            
+            List<String> header = Arrays.asList(headerArray);
+            String[] line;
+            int processedCount = 0;
+            
+            while ((line = csvReader.readNext()) != null) {
+                try {
+                    processCSVLine(line, header, notificationBatch, errorBatch, currentIteration);
+                    processedCount++;
+                    
+                    if (MemoryOptimizationUtil.isMemoryLow() && batchSize > 10) {
+                        batchSize = Math.max(10, batchSize / 2);
+                        System.out.println("Memória baixa detectada. Reduzindo batch size para: " + batchSize);
+                    }
+                    
+                    if (notificationBatch.size() >= batchSize) {
+                        saveBatches(notificationBatch, errorBatch);
+                        MemoryOptimizationUtil.clearAndTrimLists(notificationBatch, errorBatch);
+                        
+                        if (processedCount % 100 == 0) {
+                            MemoryOptimizationUtil.logMemoryStats("Processados " + processedCount + " registros");
+                        }
+                    }
+                } catch (Exception e) {
+                    System.err.println("Erro ao processar linha do CSV: " + e.getMessage());
+                }
+            }
+            
+            if (!notificationBatch.isEmpty() || !errorBatch.isEmpty()) {
+                saveBatches(notificationBatch, errorBatch);
+            }
+            
+            MemoryOptimizationUtil.logMemoryStats("Fim processamento CSV - Total: " + processedCount);
         }
-
-        notificationRepository.saveAll(notifications);
-        notificationsErrorService.insertListOfNotifications(notificationsWithError);
-
+        
         return new SaveCsvResponseDTO(true);
-    } 
+    }
+
+    private SaveCsvResponseDTO processXLSXFileStreaming(MultipartFile file) throws IOException {
+        Long currentIteration = notificationsErrorService.getLastIteration() + 1;
+        
+        int batchSize = Math.min(MemoryOptimizationUtil.getDynamicBatchSize() / 2, 25);
+        MemoryOptimizationUtil.logMemoryStats("Início processamento XLSX");
+        
+        List<Notification> notificationBatch = new ArrayList<>(batchSize);
+        List<NotificationWithError> errorBatch = new ArrayList<>(batchSize);
+        
+        try (InputStream inputStream = file.getInputStream(); 
+             Workbook workbook = new XSSFWorkbook(inputStream)) {
+            
+            Sheet sheet = workbook.getSheetAt(0);
+            Iterator<Row> rowIterator = sheet.iterator();
+            FormulaEvaluator evaluator = workbook.getCreationHelper().createFormulaEvaluator();
+            NeighborhoodsMossoro neighborhoods = new NeighborhoodsMossoro();
+
+            if (!rowIterator.hasNext()) {
+                throw new IOException("O arquivo está vazio.");
+            }
+
+            Row headerRow = rowIterator.next();
+            List<String> header = new ArrayList<>();
+            for (Cell cell : headerRow) {
+                header.add(cell.getStringCellValue());
+            }
+
+            int processedCount = 0;
+            while (rowIterator.hasNext()) {
+                Row row = rowIterator.next();
+                try {
+                    processXLSXRowWithValidation(row, header, evaluator, neighborhoods, 
+                                               notificationBatch, errorBatch, currentIteration);
+                    processedCount++;
+
+                    if (MemoryOptimizationUtil.isMemoryLow() && batchSize > 5) {
+                        batchSize = Math.max(5, batchSize / 2);
+                        System.out.println("Memória baixa detectada. Reduzindo batch size XLSX para: " + batchSize);
+                    }
+
+                    if (notificationBatch.size() >= batchSize) {
+                        saveBatches(notificationBatch, errorBatch);
+                        MemoryOptimizationUtil.clearAndTrimLists(notificationBatch, errorBatch);
+                        
+                        if (processedCount % 50 == 0) {
+                            MemoryOptimizationUtil.logMemoryStats("Processados " + processedCount + " registros XLSX");
+                        }
+                    }
+                } catch (Exception e) {
+                    System.err.println("Erro ao processar linha do XLSX: " + e.getMessage());
+                }
+            }
+
+            // Processar registros restantes
+            if (!notificationBatch.isEmpty() || !errorBatch.isEmpty()) {
+                saveBatches(notificationBatch, errorBatch);
+            }
+
+            MemoryOptimizationUtil.logMemoryStats("Fim processamento XLSX - Total: " + processedCount);
+            return new SaveCsvResponseDTO(true);
+        }
+    }
+
+    private void processXLSXRowWithValidation(Row row, List<String> header, FormulaEvaluator evaluator,
+                                            NeighborhoodsMossoro neighborhoods,
+                                            List<Notification> notificationBatch,
+                                            List<NotificationWithError> errorBatch,
+                                            Long currentIteration) {
+        try {
+            String[] csvLine = new String[header.size()];
+
+            for (int i = 0; i < header.size(); i++) {
+                Cell cell = row.getCell(i);
+                csvLine[i] = getCellValueAsString(cell, evaluator);
+            }
+
+            String neighborhoodFromNotification = csvLine[header.indexOf("NM_BAIRRO")];
+
+            if ((neighborhoodFromNotification = neighborhoods.search(neighborhoodFromNotification)) != null) {
+                csvLine[header.indexOf("NM_BAIRRO")] = neighborhoodFromNotification;
+                Notification notification = convertCsvLineToNotificationObject(csvLine, header);
+                
+                if (notificationsErrorService.notificationHasError(notification)) {
+                    NotificationWithError notificationWithError = NotificationWithError.builder()
+                        .idNotification(notification.getIdNotification())
+                        .idAgravo(notification.getIdAgravo())
+                        .idadePaciente(notification.getIdadePaciente())
+                        .dataNotification(notification.getDataNotification())
+                        .dataNascimento(notification.getDataNascimento())
+                        .classificacao(notification.getClassificacao())
+                        .sexo(notification.getSexo())
+                        .idBairro(notification.getIdBairro())
+                        .nomeBairro(notification.getNomeBairro())
+                        .evolucao(notification.getEvolucao())
+                        .semanaEpidemiologica(notification.getSemanaEpidemiologica())
+                        .iteration(currentIteration)
+                        .build();
+                    
+                    errorBatch.add(notificationWithError);
+                } else {
+                    notificationBatch.add(notification);
+                }
+            }
+        } catch (Exception e) {
+            System.err.println("Erro ao processar linha XLSX: " + e.getMessage());
+        }
+    }
+
+    private String getCellValueAsString(Cell cell, FormulaEvaluator evaluator) {
+        try {
+            if (cell == null) {
+                return "";
+            }
+            switch (cell.getCellType()) {
+                case STRING:
+                    return cell.getStringCellValue();
+                case NUMERIC:
+                    if (DateUtil.isCellDateFormatted(cell)) {
+                        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+                        return dateFormat.format(cell.getDateCellValue());
+                    } else {
+                        return String.valueOf(cell.getNumericCellValue());
+                    }
+                case BOOLEAN:
+                    return String.valueOf(cell.getBooleanCellValue());
+                case FORMULA:
+                    CellValue cellValue = evaluator.evaluate(cell);
+                    switch (cellValue.getCellType()) {
+                        case STRING:
+                            return cellValue.getStringValue();
+                        case NUMERIC:
+                            if (DateUtil.isCellDateFormatted(cell)) {
+                                SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+                                return dateFormat.format(cell.getDateCellValue());
+                            } else {
+                                return String.valueOf(cellValue.getNumberValue());
+                            }
+                        case BOOLEAN:
+                            return String.valueOf(cellValue.getBooleanValue());
+                        default:
+                            return "";
+                    }
+                default:
+                    return "";
+            }
+        } catch (Exception e) {
+            return "";
+        }
+    }
+
+    private void processCSVLine(String[] csvLine, List<String> header, 
+                               List<Notification> notificationBatch, 
+                               List<NotificationWithError> errorBatch, 
+                               Long currentIteration) {
+        try {
+            NeighborhoodsMossoro neighborhoods = new NeighborhoodsMossoro();
+            String neighborhoodFromNotification = csvLine[header.indexOf("NM_BAIRRO")];
+            
+            if ((neighborhoodFromNotification = neighborhoods.search(neighborhoodFromNotification)) != null) {
+                csvLine[header.indexOf("NM_BAIRRO")] = neighborhoodFromNotification;
+                Notification notification = convertCsvLineToNotificationObject(csvLine, header);
+                
+                if (notificationsErrorService.notificationHasError(notification)) {
+                    NotificationWithError notificationWithError = NotificationWithError.builder()
+                        .idNotification(notification.getIdNotification())
+                        .idAgravo(notification.getIdAgravo())
+                        .idadePaciente(notification.getIdadePaciente())
+                        .dataNotification(notification.getDataNotification())
+                        .dataNascimento(notification.getDataNascimento())
+                        .classificacao(notification.getClassificacao())
+                        .sexo(notification.getSexo())
+                        .idBairro(notification.getIdBairro())
+                        .nomeBairro(notification.getNomeBairro())
+                        .evolucao(notification.getEvolucao())
+                        .semanaEpidemiologica(notification.getSemanaEpidemiologica())
+                        .iteration(currentIteration)
+                        .build();
+                    
+                    errorBatch.add(notificationWithError);
+                } else {
+                    notificationBatch.add(notification);
+                }
+            }
+        } catch (Exception e) {
+            System.err.println("Erro ao processar linha: " + e.getMessage());
+        }
+    }
+
+    private void saveBatches(List<Notification> notificationBatch, List<NotificationWithError> errorBatch) {
+        try {
+            if (!notificationBatch.isEmpty()) {
+                notificationRepository.saveAll(notificationBatch);
+                notificationRepository.flush();
+            }
+            
+            if (!errorBatch.isEmpty()) {
+                notificationsErrorService.insertListOfNotifications(errorBatch);
+            }
+        } catch (Exception e) {
+            System.err.println("Erro ao salvar batch: " + e.getMessage());
+            throw e;
+        }
+    }
+
+ 
 
     public Page<DataNotificationResponseDTO> getAllNotificationsPaginated(Pageable pageable)
     {
