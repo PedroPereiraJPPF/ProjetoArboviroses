@@ -1,5 +1,5 @@
 # Dockerfile para Backend Java Spring Boot
-FROM maven:3.8-openjdk-17 AS build
+FROM maven:3.9-eclipse-temurin-17 AS build
 
 WORKDIR /app
 
@@ -20,13 +20,14 @@ RUN ln -sf /usr/share/zoneinfo/America/Sao_Paulo /etc/localtime && \
 RUN mvn clean package -DskipTests -B
 
 # Estágio de produção
-FROM openjdk:17-jdk-slim
+FROM eclipse-temurin:17-jre-alpine
 
 # Instalar netcat para health checks
-RUN apt-get update && apt-get install -y netcat-traditional && rm -rf /var/lib/apt/lists/*
+RUN apk add --no-cache netcat-openbsd tzdata
 
 # Criar usuário não-root
-RUN useradd -r -u 1000 -m -c "spring user" -d /app -s /bin/false spring
+RUN addgroup -g 1000 spring && \
+    adduser -D -u 1000 -G spring spring
 
 WORKDIR /app
 
@@ -34,8 +35,7 @@ WORKDIR /app
 COPY --from=build /app/target/*.jar app.jar
 
 # Configurar timezone
-RUN ln -sf /usr/share/zoneinfo/America/Sao_Paulo /etc/localtime && \
-    echo "America/Sao_Paulo" > /etc/timezone
+ENV TZ=America/Sao_Paulo
 
 # Mudar propriedade dos arquivos
 RUN chown -R spring:spring /app
