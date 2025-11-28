@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
+
+import com.arboviroses.conectaDengue.Api.DTO.request.NotificationBatchDTO;
 import com.arboviroses.conectaDengue.Api.DTO.response.AgravoCountByAgeRange;
 import com.arboviroses.conectaDengue.Api.DTO.response.AgravoCountByEpidemiologicalSemanaEpidemiologicaResponse;
 import com.arboviroses.conectaDengue.Api.DTO.response.BairroCountDTO;
@@ -33,6 +35,11 @@ public class NotificationController
 {
     private final NotificationService notificationService;
     private final NotificationsErrorService notificationsErrorService;
+
+    @PostMapping("/saveNotifications")
+    public ResponseEntity<SuccessResponseDTO<SaveCsvResponseDTO>> saveNotifications(@RequestBody NotificationBatchDTO notificationsData) throws Exception {
+        return ResponseEntity.ok().body(SuccessResponseDTO.setResponse(notificationService.saveNotificationsFromBatch(notificationsData), "notificações salvas com sucesso"));
+    }
 
     @PostMapping("/savecsvdata")
     public ResponseEntity<SuccessResponseDTO<SaveCsvResponseDTO>> readCsv(@RequestParam("file") MultipartFile file) throws Exception {

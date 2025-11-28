@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Map;
 import com.arboviroses.conectaDengue.Utils.ConvertNameToIdAgravo;
 import com.arboviroses.conectaDengue.Utils.MemoryOptimizationUtil;
+import com.arboviroses.conectaDengue.Utils.StringToDateCSV;
 import com.arboviroses.conectaDengue.Utils.MossoroData.NeighborhoodsMossoro;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellValue;
@@ -28,6 +29,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+
+import com.arboviroses.conectaDengue.Api.DTO.request.NotificationBatchDTO;
+import com.arboviroses.conectaDengue.Api.DTO.request.NotificationDataDTO;
 import com.arboviroses.conectaDengue.Api.DTO.response.AgravoCountByAgeRange;
 import com.arboviroses.conectaDengue.Api.DTO.response.AgravoCountByEpidemiologicalSemanaEpidemiologicaResponse;
 import com.arboviroses.conectaDengue.Api.DTO.response.BairroCountDTO;
@@ -54,6 +58,87 @@ public class NotificationService {
     private final NotificationsErrorService notificationsErrorService;
     @PersistenceContext
     private EntityManager entityManager;
+
+    public SaveCsvResponseDTO saveNotificationsFromBatch(NotificationBatchDTO notificationBatchDTO) {
+        List<Notification> notifications = new ArrayList<>();
+        List<NotificationWithError> notificationsWithError = new ArrayList<>();
+        Long currentIteration = notificationsErrorService.getLastIteration() + 1;
+        int successCount = 0;
+        int errorCount = 0;
+
+        for (NotificationDataDTO dto : notificationBatchDTO.getNotifications()) {
+            try {
+                Notification notification = convertDtoToNotification(dto);
+                
+                if (notificationsErrorService.notificationHasError(notification)) {
+                    NotificationWithError notificationWithError = NotificationWithError.builder()
+                        .idNotification(notification.getIdNotification())
+                        .idAgravo(notification.getIdAgravo())
+                        .idadePaciente(notification.getIdadePaciente())
+                        .dataNotification(notification.getDataNotification())
+                        .dataNascimento(notification.getDataNascimento())
+                        .classificacao(notification.getClassificacao())
+                        .sexo(notification.getSexo())
+                        .idBairro(notification.getIdBairro())
+                        .nomeBairro(notification.getNomeBairro())
+                        .evolucao(notification.getEvolucao())
+                        .semanaEpidemiologica(notification.getSemanaEpidemiologica())
+                        .iteration(currentIteration)
+                        .build();
+
+                    notificationsWithError.add(notificationWithError);
+                    errorCount++;
+                } 
+                
+                notifications.add(notification);
+                successCount++;
+            } catch (Exception e) {
+                errorCount++;
+
+                e.printStackTrace();
+            }
+        }
+
+        if (!notifications.isEmpty()) {
+            notificationRepository.saveAll(notifications);
+        }
+        
+        if (!notificationsWithError.isEmpty()) {
+            notificationsErrorService.insertListOfNotifications(notificationsWithError);
+        }
+
+        return new SaveCsvResponseDTO(true);
+    }
+
+    private Notification convertDtoToNotification(NotificationDataDTO dto) throws ParseException {
+        Notification notification = new Notification();
+        notification.setIdNotification(dto.getNuNotific());
+        notification.setIdAgravo(dto.getIdAgravo());
+        notification.setIdadePaciente(dto.getIdade());
+        notification.setClassificacao(dto.getClassiFin());
+        notification.setSexo(dto.getCsSexo());
+        notification.setIdBairro(dto.getIdBairro());
+        notification.setNomeBairro(dto.getNmBairro());
+        notification.setEvolucao(dto.getEvolucao());
+
+        Date dataNascimento = StringToDateCSV.ConvertStringToDate(dto.getDtNasc());
+        Date dataNotification = StringToDateCSV.ConvertStringToDate(dto.getDtNotific());
+        
+        notification.setDataNascimento(dataNascimento);
+        notification.setDataNotification(dataNotification);
+        
+        if (notification.getDataNotification() != null) {
+            notification.setSemanaEpidemiologica(calculateSemanaEpidemiologica(notification.getDataNotification()));
+        }
+        
+        return notification;
+    }
+
+    private Integer calculateSemanaEpidemiologica(Date date) {
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(date);
+        return cal.get(Calendar.WEEK_OF_YEAR);
+    }
 
     public SaveCsvResponseDTO saveNotificationsData(MultipartFile file) throws IOException, CsvException, NumberFormatException, ParseException
     {
