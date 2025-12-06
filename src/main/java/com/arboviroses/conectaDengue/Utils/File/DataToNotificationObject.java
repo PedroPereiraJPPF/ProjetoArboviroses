@@ -26,6 +26,11 @@ import com.opencsv.CSVReader;
 import com.opencsv.exceptions.CsvException;
 import static com.arboviroses.conectaDengue.Utils.ConvertCSVLineToNotifications.convertCsvLineToNotificationObject;
 
+/**
+ * Classe mantida para compatibilidade com arquivos CSV antigos.
+ * O novo endpoint recebe somente texto
+ */
+@Deprecated
 public class DataToNotificationObject {
     
     /**
@@ -60,6 +65,7 @@ public class DataToNotificationObject {
     /**
      * Novo método para processar XLSX com streaming e economia de memória
      */
+    @Deprecated
     public static SaveCsvResponseDTO processXLSXFileStreaming(
             InputStream inputStream,
             List<Notification> notificationBatch,
@@ -134,6 +140,7 @@ public class DataToNotificationObject {
         }
     }
 
+    @Deprecated
     public static List<Notification> processXLSXFile(MultipartFile file) throws IOException {
         try (InputStream inputStream = file.getInputStream(); Workbook workbook = new XSSFWorkbook(inputStream)) {
             Sheet sheet = workbook.getSheetAt(0);

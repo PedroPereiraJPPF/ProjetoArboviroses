@@ -2,63 +2,61 @@ package com.arboviroses.conectaDengue.Utils.MossoroData;
 
 import java.util.HashSet;
 import java.util.Set;
-
 import com.arboviroses.conectaDengue.Utils.Search.SearchAlgorithms;
 
 public class NeighborhoodsMossoro
 {
-    private Set<String> neighborhoods;
+    private static final Set<String> neighborhoods;
 
-    public NeighborhoodsMossoro()
-    {
-        this.neighborhoods = new HashSet<>();
-        this.neighborhoods.add("Abolição");
-        this.neighborhoods.add("AEROPORTO");
-        this.neighborhoods.add("ALTO DA CONCEIÇÃO");
-        this.neighborhoods.add("ALTO DE SÃO MANOEL");
-        this.neighborhoods.add("ALTO DO SUMARÉ");
-        this.neighborhoods.add("ÁREA RURAL DE MOSSORÓ");
-        this.neighborhoods.add("BARROCAS");
-        this.neighborhoods.add("BELA VISTA");
-        this.neighborhoods.add("BELO HORIZONTE");
-        this.neighborhoods.add("BOA VISTA");
-        this.neighborhoods.add("BOM JARDIM");
-        this.neighborhoods.add("BOM JESUS");
-        this.neighborhoods.add("CENTRO");
-        this.neighborhoods.add("DIX-SEPT ROSADO");
-        this.neighborhoods.add("DOM JAIME CÂMARA");
-        this.neighborhoods.add("DOZE ANOS");
-        this.neighborhoods.add("ILHA DE SANTA LUZIA");
-        this.neighborhoods.add("ITAPETINGA");
-        this.neighborhoods.add("LAGOA DO MATO");
-        this.neighborhoods.add("MONSENHOR AMÉRICO");
-        this.neighborhoods.add("NOVA BETÂNIA");
-        this.neighborhoods.add("PAREDÕES");
-        this.neighborhoods.add("PINTOS");
-        this.neighborhoods.add("PLANALTO TREZE DE MAIO");
-        this.neighborhoods.add("PRESIDENTE COSTA E SILVA");
-        this.neighborhoods.add("REDENÇÃO");
-        this.neighborhoods.add("RINCÃO");
-        this.neighborhoods.add("SANTA DELMIRA");
-        this.neighborhoods.add("SANTA JÚLIA");
-        this.neighborhoods.add("SANTO ANTÔNIO");
+    static {
+        neighborhoods = new HashSet<>();
+        neighborhoods.add("Abolição");
+        neighborhoods.add("AEROPORTO");
+        neighborhoods.add("ALTO DA CONCEIÇÃO");
+        neighborhoods.add("ALTO DE SÃO MANOEL");
+        neighborhoods.add("ALTO DO SUMARÉ");
+        neighborhoods.add("ÁREA RURAL DE MOSSORÓ");
+        neighborhoods.add("BARROCAS");
+        neighborhoods.add("BELA VISTA");
+        neighborhoods.add("BELO HORIZONTE");
+        neighborhoods.add("BOA VISTA");
+        neighborhoods.add("BOM JARDIM");
+        neighborhoods.add("BOM JESUS");
+        neighborhoods.add("CENTRO");
+        neighborhoods.add("DIX-SEPT ROSADO");
+        neighborhoods.add("DOM JAIME CÂMARA");
+        neighborhoods.add("DOZE ANOS");
+        neighborhoods.add("ILHA DE SANTA LUZIA");
+        neighborhoods.add("ITAPETINGA");
+        neighborhoods.add("LAGOA DO MATO");
+        neighborhoods.add("MONSENHOR AMÉRICO");
+        neighborhoods.add("NOVA BETÂNIA");
+        neighborhoods.add("PAREDÕES");
+        neighborhoods.add("PINTOS");
+        neighborhoods.add("PLANALTO TREZE DE MAIO");
+        neighborhoods.add("PRESIDENTE COSTA E SILVA");
+        neighborhoods.add("REDENÇÃO");
+        neighborhoods.add("RINCÃO");
+        neighborhoods.add("SANTA DELMIRA");
+        neighborhoods.add("SANTA JÚLIA");
+        neighborhoods.add("SANTO ANTÔNIO");
     }
 
-    public boolean contains(String key)
+    public static boolean contains(String key)
     {
-        return this.neighborhoods.contains(key);
+        return neighborhoods.contains(key);
     }
 
-    public String search(String key) 
+    public static String search(String key) 
     {
         int calculatedDistance, shortestDistance = 3;
         String correctedNeighborhood = null;
 
-        if (this.contains(key)) {
+        if (contains(key)) {
             return key;
         }
 
-        for (String neighborhood : this.neighborhoods) {
+        for (String neighborhood : neighborhoods) {
             if ((calculatedDistance = SearchAlgorithms.levenstein(key, neighborhood)) <= shortestDistance) {
                 shortestDistance = calculatedDistance;
                 correctedNeighborhood = neighborhood;
@@ -68,8 +66,8 @@ public class NeighborhoodsMossoro
         return correctedNeighborhood;
     }
 
-    public Set<String> getNeighborhoods()
+    public static Set<String> getNeighborhoods()
     {
-        return this.neighborhoods;
+        return new HashSet<>(neighborhoods);
     }
 }

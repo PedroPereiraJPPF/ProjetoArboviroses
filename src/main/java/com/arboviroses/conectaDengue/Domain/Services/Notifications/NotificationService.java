@@ -9,6 +9,8 @@ import java.util.List;
 import java.util.Map;
 import com.arboviroses.conectaDengue.Utils.ConvertNameToIdAgravo;
 import com.arboviroses.conectaDengue.Utils.StringToDateCSV;
+import com.arboviroses.conectaDengue.Utils.MossoroData.NeighborhoodsMossoro;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -57,7 +59,7 @@ public class NotificationService {
                         .classificacao(notification.getClassificacao())
                         .sexo(notification.getSexo())
                         .idBairro(notification.getIdBairro())
-                        .nomeBairro(notification.getNomeBairro())
+                        .nomeBairro(NeighborhoodsMossoro.search(notification.getNomeBairro()))
                         .evolucao(notification.getEvolucao())
                         .semanaEpidemiologica(notification.getSemanaEpidemiologica())
                         .iteration(currentIteration)
