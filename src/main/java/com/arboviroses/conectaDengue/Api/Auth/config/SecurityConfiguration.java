@@ -33,8 +33,8 @@ public class SecurityConfiguration {
                 .disable())
                 .authorizeHttpRequests(requests -> requests
                         .requestMatchers("api/auth/register").authenticated()
-                        .requestMatchers("api/savecsvdata").authenticated()
                         .requestMatchers("api/saveNotifications").authenticated()
+                        .requestMatchers("api/lira/upload").authenticated()
                         .anyRequest()
                         .permitAll())
                 .sessionManagement(management -> management

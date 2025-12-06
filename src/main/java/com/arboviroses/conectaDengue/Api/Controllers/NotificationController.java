@@ -41,11 +41,6 @@ public class NotificationController
         return ResponseEntity.ok().body(SuccessResponseDTO.setResponse(notificationService.saveNotificationsFromBatch(notificationsData), "notificações salvas com sucesso"));
     }
 
-    @PostMapping("/savecsvdata")
-    public ResponseEntity<SuccessResponseDTO<SaveCsvResponseDTO>> readCsv(@RequestParam("file") MultipartFile file) throws Exception {
-        return ResponseEntity.ok().body(SuccessResponseDTO.setResponse(notificationService.saveNotificationsData(file), "dados do arquivo salvos com sucesso"));
-    }
-
     @GetMapping("/notifications/errors")
     public ResponseEntity<SuccessResponseDTO<List<NotificationWithError>>> getAllNotificationsWithError() {
         return ResponseEntity.ok().body(
@@ -54,7 +49,9 @@ public class NotificationController
     }
 
     @GetMapping("/notifications")
-    public ResponseEntity<SuccessResponseDTO<Page<DataNotificationResponseDTO>>> getAll(Pageable pageable, HttpServletRequest request) throws InvalidAgravoException {
+    public ResponseEntity<SuccessResponseDTO<Page<DataNotificationResponseDTO>>> getAll(HttpServletRequest request) throws InvalidAgravoException {
+        Pageable pageable = Pageable.ofSize(20);
+
         return ResponseEntity.ok().body(SuccessResponseDTO.setResponse(notificationService.getNotificationsByIdAgravoPaginated(pageable, request), null));
     }
 
